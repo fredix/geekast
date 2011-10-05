@@ -1,0 +1,20 @@
+Source: libsigar
+Priority: extra
+Maintainer: Christoph Dwertmann <christoph.dwertmann@nicta.com.au>
+Build-Depends: debhelper (>= 5), libtool, automake1.7, autoconf
+Standards-Version: 3.7.2
+Section: libs
+
+Package: libsigar
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: System Information Gatherer and Reporter library
+ SIGAR (System Information Gatherer and Reporter) is a cross-platform, cross-language library and command-line tool for accessing operating system and hardware level information in Java, Perl and .NET.
+
+Package: libsigar-dev
+Section: libdevel
+Architecture: any
+Depends: libsigar (= ${Source-Version})
+Description: System Information Gatherer and Reporter library headers
+ SIGAR (System Information Gatherer and Reporter) is a cross-platform, cross-language library and command-line tool for accessing operating system and hardware level information in Java, Perl and .NET.

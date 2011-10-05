@@ -1,0 +1,157 @@
+**************************************************
+http://jan.kneschke.de/assets/2007/2/16/sample.txt
+**************************************************
+
+/home/jan/Documents/hyperic-sigar-1.3.0.0-src/sigar-test-all.c.55: 
+  pid = 15347
+/home/jan/Documents/hyperic-sigar-1.3.0.0-src/sigar-test-all.c.37: 
+  mem.ram = 1024, 
+  mem.total = 1053671424, 
+  mem.used = 1040289792, 
+  mem.free = 13381632, 
+  mem.actual_free = 227844096, 
+  mem.actual_used = 825827328
+/home/jan/Documents/hyperic-sigar-1.3.0.0-src/sigar-test-all.c.70: 
+  swap.total = 2154938368, 
+  swap.used = 668971008, 
+  swap.free = 1485967360
+/home/jan/Documents/hyperic-sigar-1.3.0.0-src/sigar-test-all.c.90: 
+  cpu.user = 66553390, 
+  cpu.sys = 86729550, 
+  cpu.nice = 1660720, 
+  cpu.idle = 5454518920, 
+  cpu.wait = 62216380, 
+  cpu.total = 5671678960
+/home/jan/Documents/hyperic-sigar-1.3.0.0-src/sigar-test-all.c.109: 
+[0] 
+  cpu.user = 66553390, 
+  cpu.sys = 86729550, 
+  cpu.nice = 1660720, 
+  cpu.idle = 5454518920, 
+  cpu.wait = 62216380, 
+  cpu.total = 5671678960
+/home/jan/Documents/hyperic-sigar-1.3.0.0-src/sigar-test-all.c.152: 
+[0] 
+  info.vendor = AMD, 
+  info.model = Athlon, 
+  info.mhz = 1000, 
+  info.cache_size = 512
+/home/jan/Documents/hyperic-sigar-1.3.0.0-src/sigar-test-all.c.173: 
+  uptime = 5676243.720000
+/home/jan/Documents/hyperic-sigar-1.3.0.0-src/sigar-test-all.c.208: 
+  uptime = 5676243.720000
+  uptime.string = 65 days, 16:44
+/home/jan/Documents/hyperic-sigar-1.3.0.0-src/sigar-test-all.c.188: 
+  loadavg.0 = 0.02
+  loadavg.1 = 0.09
+  loadavg.2 = 0.08
+/home/jan/Documents/hyperic-sigar-1.3.0.0-src/sigar-test-all.c.241: 
+  rlimit.cpu_cur = 18446744073709551615
+  rlimit.cpu_max = 18446744073709551615
+  rlimit.file_size_cur = 18446744073709551615
+  rlimit.file_size_max = 18446744073709551615
+  rlimit.pipe_size_cur = 8
+  rlimit.pipe_size_max = 8
+  rlimit.data_cur = 18446744073709551615
+  rlimit.data_max = 18446744073709551615
+  rlimit.stack_cur = 8192
+  rlimit.stack_max = 18446744073709551615
+  rlimit.core_cur = 0
+  rlimit.core_max = 18446744073709551615
+  rlimit.memory_cur = 874650
+  rlimit.memory_max = 18446744073709551615
+  rlimit.processes_cur = 8191
+  rlimit.processes_max = 8191
+  rlimit.open_files_cur = 1024
+  rlimit.open_files_max = 8192
+  rlimit.virtual_memory_cur = 2506800
+  rlimit.virtual_memory_max = 18446744073709551615
+/home/jan/Documents/hyperic-sigar-1.3.0.0-src/sigar-test-all.c.274: 
+  proc.total = 133
+/home/jan/Documents/hyperic-sigar-1.3.0.0-src/sigar-test-all.c.287: 
+[98] 
+  proc.pid = 17351
+  proc_state.name = mysqld
+  proc_state.state = S
+  proc_state.ppid = 17288
+  proc_state.tty = 0x880c
+  proc_state.priority = 17
+  proc_state.nice = 0
+  proc_state.processor = 0
+  proc_state.threads = 11
+  proc_mem.size = 719966208
+  proc_mem.resident = 13189120
+  proc_mem.share = 1998848
+  proc_mem.minor_faults = 169321
+  proc_mem.major_faults = 7702
+  proc_mem.page_faults = 177023
+  proc_time.start_time = 1166467775000
+  proc_time.user = 51410
+  proc_time.sys = 14800
+  proc_time.total = 66210
+/home/jan/Documents/hyperic-sigar-1.3.0.0-src/sigar-test-all.c.374: (items = 3)
+[0] 
+  fs.dirname = /
+  fs.devname = /dev/md0
+  fs.typename = local
+  fs.sys-type-name = reiserfs
+  fs.type = 2
+  fs.flags = 0xf0000014
+  fsusage.total = 155231224
+  fsusage.free = 81941088
+  fsusage.used = 73290136
+  fsusage.avail = 81941088
+  fsusage.files = 0
+  fsusage.disk_reads = 12806043
+  fsusage.disk_writes = 20685558
+  fsusage.disk_write_bytes = 84728045568
+  fsusage.disk_read_bytes = 367142318080
+  fsusage.disk_queue = 0
+  fsusage.use_percent = 0.480000
+[1] 
+  fs.dirname = /sys/kernel/security
+  fs.devname = securityfs
+  fs.typename = none
+  fs.sys-type-name = securityfs
+  fs.type = 1
+  fs.flags = 0x736e6f6974
+  fsusage.total = 0
+  fsusage.free = 0
+  fsusage.used = 0
+  fsusage.avail = 0
+  fsusage.files = 0
+  fsusage.disk_reads = 18446744073709551615
+  fsusage.disk_writes = 18446744073709551615
+  fsusage.disk_write_bytes = 18446744073709551615
+  fsusage.disk_read_bytes = 18446744073709551615
+  fsusage.disk_queue = 18446744073709551615
+  fsusage.use_percent = 0.000000
+[2] 
+  fs.dirname = /proc/sys/fs/binfmt_misc
+  fs.devname = none
+  fs.typename = none
+  fs.sys-type-name = binfmt_misc
+  fs.type = 1
+  fs.flags = 0x6973726576080020
+  fsusage.total = 0
+  fsusage.free = 0
+  fsusage.used = 0
+  fsusage.avail = 0
+  fsusage.files = 0
+  fsusage.disk_reads = 18446744073709551615
+  fsusage.disk_writes = 18446744073709551615
+  fsusage.disk_write_bytes = 18446744073709551615
+  fsusage.disk_read_bytes = 18446744073709551615
+  fsusage.disk_queue = 18446744073709551615
+  fsusage.use_percent = 0.000000
+/home/jan/Documents/hyperic-sigar-1.3.0.0-src/sigar-test-all.c.453: 
+  sysinfo.names = Linux
+  sysinfo.versions = 2.6.16.21-0.25-default
+  sysinfo.archs = x86_64
+  sysinfo.machines = x86_64
+  sysinfo.descriptions = SuSE 10.1
+  sysinfo.patch_levels = unknown
+  sysinfo.vendors = SuSE
+  sysinfo.vendor_versions = 10.1
+  sysinfo.vendor_names = Linux
+  sysinfo.vendor_code_name = 

@@ -1,0 +1,7 @@
+geekast
+geekast.exe
+*.o
+qrc_geekast.cpp
+ui_mainwindow.h
+moc*
+geekast.pro.user

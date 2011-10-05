@@ -1,0 +1,16 @@
+geekast is a nodecast's client 
+
+INSTALL :
+qmake
+make
+
+USAGE :
+server : http://api.nodecast.net
+email : your nodecast's email
+API key : the private key is in your preferences on the nodecast.net website
+private host UUID : nodecast generate this key when geekast push datas for the first time.
+
+DO NOT PUBLISH the API key and the private host UUID.
+
+
+contact : fredix at nodecast dot net
