@@ -701,9 +701,6 @@ System::~System()
 
 
 
-
-
-
 /*
 * DATAS CLASS
 */
@@ -722,32 +719,20 @@ Datas::Datas()
     netstat = NULL;
     proclist = NULL;
 
-
-    m_doc = new QDomDocument;
-    m_root = new QDomElement(m_doc->createElement("host"));
-    m_profil = new QDomElement(m_doc->createElement("profil"));
-    m_public = new QDomElement(m_doc->createElement("public"));
-    m_uuid = new QDomElement(m_doc->createElement("uuid"));
-    m_device = new QDomElement(m_doc->createElement("device"));
+    m_root = new QVariantMap;
+    m_profil = new QVariantMap();
+    m_public = new QVariantMap();
+    m_uuid = new QVariantMap();
+    m_device = new QVariantMap();
 
 
-    m_activated_network = new QDomElement(m_doc->createElement("activated_network"));
-    m_activated_uptime = new QDomElement(m_doc->createElement("activated_uptime"));
-    m_activated_load = new QDomElement(m_doc->createElement("activated_load"));
-    m_activated_hardware = new QDomElement(m_doc->createElement("activated_hardware"));
-    m_activated_memory = new QDomElement(m_doc->createElement("activated_memory"));
-    m_activated_cpu = new QDomElement(m_doc->createElement("activated_cpu"));
-    m_activated_process = new QDomElement(m_doc->createElement("activated_process"));
-
-
-
-
-
-/*
-    QDomNode xmlNode = doc.createProcessingInstruction("xml", "version=\"1.0\" encoding=\"UTF-8\"");
-    doc.insertBefore(xmlNode, doc.firstChild());
-*/
-
+    m_activated_network = new QVariantMap();
+    m_activated_uptime = new QVariantMap();
+    m_activated_load = new QVariantMap();
+    m_activated_hardware = new QVariantMap();
+    m_activated_memory = new QVariantMap();
+    m_activated_cpu = new QVariantMap();
+    m_activated_process = new QVariantMap();
 
 }
 
@@ -773,7 +758,6 @@ Datas::~Datas()
     delete m_activated_process;
 
     delete m_root;
-    delete m_doc;
 
     if (sysinfo) delete sysinfo;
     if (loadavg) delete loadavg;
@@ -788,516 +772,196 @@ Datas::~Datas()
 }
 
 
+
+
+
+
 void Datas::Populate(QByteArray *a_datas)
 {
-    qDebug() << "populate";
+    qDebug() << "JDatas::Populate";
 
-
-    m_doc->appendChild(*m_root);
-
-    m_root->appendChild(*m_profil);
-    QDomText text_profil = m_doc->createTextNode("default");
-    m_profil->appendChild(text_profil);
-
-    m_root->appendChild(*m_public);
-    QDomText text_public = m_doc->createTextNode(public_host?"true":"false");
-    m_public->appendChild(text_public);
-
-    m_root->appendChild(*m_device);
-    QDomText text_device = m_doc->createTextNode("desktop");
-    m_device->appendChild(text_device);
+    m_root->insert("profil", "default");
+    m_root->insert("public", public_host?"true":"false");
+    m_root->insert("device", "desktop");
 
 
     // SYSINFO
-    QDomElement m_name = m_doc->createElement("name");
-    QDomElement m_version = m_doc->createElement("version");
-    QDomElement m_architecture = m_doc->createElement("architecture");
-    QDomElement m_machine = m_doc->createElement("machine");
-    QDomElement m_description = m_doc->createElement("description");
-    QDomElement m_patch_level = m_doc->createElement("patch_level");
-    QDomElement m_vendor = m_doc->createElement("vendor");
-    QDomElement m_vendor_version = m_doc->createElement("vendor_version");
-    QDomElement m_vendor_name = m_doc->createElement("vendor_name");
-    QDomElement m_vendor_code_name = m_doc->createElement("vendor_code_name");
-    QDomElement m_os_type = m_doc->createElement("os_type");
-    QDomElement m_os_base = m_doc->createElement("os_base");
+    QVariantMap data;
+    data.insert("name", sysinfo->name);
+    data.insert("version", sysinfo->version);
+    data.insert("architecture", sysinfo->arch);
+    data.insert("machine", sysinfo->machine);
+    data.insert("description", sysinfo->description);
+    data.insert("patch_level", sysinfo->patch_level);
+    data.insert("vendor", sysinfo->vendor);
+    data.insert("vendor_name", sysinfo->vendor_name);
+    data.insert("vendor_version", sysinfo->vendor_version);
+    data.insert("vendor_code_name", sysinfo->vendor_code_name);
+    data.insert("os_type", system.m_os_type);
+    data.insert("os_base", system.m_os_base);
 
-
-    m_root->appendChild(m_name);
-    QDomText text_name = m_doc->createTextNode(sysinfo->name);
-    m_name.appendChild(text_name);
-
-
-    m_root->appendChild(m_version);
-    QDomText text_version = m_doc->createTextNode(sysinfo->version);
-    m_version.appendChild(text_version);
-
-    m_root->appendChild(m_architecture);
-    QDomText text_architecture = m_doc->createTextNode(sysinfo->arch);
-    m_architecture.appendChild(text_architecture);
-
-    m_root->appendChild(m_machine);
-    QDomText text_machine = m_doc->createTextNode(sysinfo->machine);
-    m_machine.appendChild(text_machine);
-
-    m_root->appendChild(m_description);
-    QDomText text_description = m_doc->createTextNode(sysinfo->description);
-    m_description.appendChild(text_description);
-
-
-    m_root->appendChild(m_patch_level);
-    QDomText text_patch_level = m_doc->createTextNode(sysinfo->patch_level);
-    m_patch_level.appendChild(text_patch_level);
-
-    m_root->appendChild(m_vendor);
-    QDomText text_vendor = m_doc->createTextNode(sysinfo->vendor);
-    m_vendor.appendChild(text_vendor);
-
-    m_root->appendChild(m_vendor_name);
-    QDomText text_vendor_name = m_doc->createTextNode(sysinfo->vendor_name);
-    m_vendor_name.appendChild(text_vendor_name);
-
-
-    m_root->appendChild(m_vendor_version);
-    QDomText text_vendor_version = m_doc->createTextNode(sysinfo->vendor_version);
-    m_vendor_version.appendChild(text_vendor_version);
-
-
-    m_root->appendChild(m_vendor_code_name);
-    QDomText text_vendor_code_name = m_doc->createTextNode(sysinfo->vendor_code_name);
-    m_vendor_code_name.appendChild(text_vendor_code_name);
-
-
-    m_root->appendChild(m_os_type);
-    QDomText text_os_type = m_doc->createTextNode(system.m_os_type);
-    m_os_type.appendChild(text_os_type);
-
-    m_root->appendChild(m_os_base);
-    QDomText text_os_base = m_doc->createTextNode(system.m_os_base);
-    m_os_base.appendChild(text_os_base);
-
+    m_root->insert("sysinfo", data);
 
 
     if (activated_network)
     {
-        QDomElement m_hostname = m_doc->createElement("hostname");
-        QDomElement m_domain_name = m_doc->createElement("domain_name");
-        QDomElement m_default_gateway = m_doc->createElement("default_gateway");
-        QDomElement m_primary_dns = m_doc->createElement("primary_dns");
-        QDomElement m_secondary_dns = m_doc->createElement("secondary_dns");
-        QDomElement m_primary_interface = m_doc->createElement("primary_interface");
-        QDomElement m_primary_addr = m_doc->createElement("primary_addr");
-        QDomElement m_rx_rate = m_doc->createElement("rx_rate");
-        QDomElement m_tx_rate = m_doc->createElement("tx_rate");
-
+        QVariantMap data;
 
 
         netinfo = new NetInfo();
         netstat = new NetStat(netinfo->primary_interface);
 
-        m_root->appendChild(*m_activated_network);
-        QDomText text_activated_network = m_doc->createTextNode("true");
-        m_activated_network->appendChild(text_activated_network);
+
+        data.insert("activated", "true");
+        data.insert("hostname", netinfo->hostname);
+        data.insert("domain_name", netinfo->domain_name);
+        data.insert("default_gateway", netinfo->default_gateway);
+        data.insert("primary_dns", netinfo->primary_dns);
+        data.insert("secondary_dns", netinfo->secondary_dns);
+        data.insert("primary_interface", netinfo->primary_interface);
+        data.insert("primary_addr", netinfo->primary_addr);
+        data.insert("rx_rate", netstat->rx_rate);
+        data.insert("tx_rate", netstat->tx_rate);
 
 
-        QDomElement m_network = m_doc->createElement("network");
-        m_root->appendChild(m_network);
-
-
-        m_network.appendChild(m_hostname);
-        qDebug() << "populate OK : " << netinfo->hostname;
-
-        QDomText text_hostname = m_doc->createTextNode(netinfo->hostname);
-        m_hostname.appendChild(text_hostname);
-
-
-        m_network.appendChild(m_domain_name);
-        QDomText text_domain_name = m_doc->createTextNode(netinfo->domain_name);
-        m_domain_name.appendChild(text_domain_name);
-
-
-
-        m_network.appendChild(m_default_gateway);
-        QDomText text_default_gateway = m_doc->createTextNode(netinfo->default_gateway);
-        m_default_gateway.appendChild(text_default_gateway);
-
-
-        m_network.appendChild(m_primary_dns);
-        QDomText text_primary_dns = m_doc->createTextNode(netinfo->primary_dns);
-        m_primary_dns.appendChild(text_primary_dns);
-
-
-
-        m_network.appendChild(m_secondary_dns);
-        QDomText text_secondary_dns = m_doc->createTextNode(netinfo->secondary_dns);
-        m_secondary_dns.appendChild(text_secondary_dns);
-
-
-        m_network.appendChild(m_primary_interface);
-        QDomText text_primary_interface = m_doc->createTextNode(netinfo->primary_interface);
-        m_primary_interface.appendChild(text_primary_interface);
-
-
-        m_network.appendChild(m_primary_addr);
-        QDomText text_primary_addr = m_doc->createTextNode(netinfo->primary_addr);
-        m_primary_addr.appendChild(text_primary_addr);
-
-
-        m_network.appendChild(m_rx_rate);
-        QDomText text_rx_rate = m_doc->createTextNode(netstat->rx_rate);
-        m_rx_rate.appendChild(text_rx_rate);
-
-
-        m_network.appendChild(m_tx_rate);
-        QDomText text_tx_rate = m_doc->createTextNode(netstat->tx_rate);
-        m_tx_rate.appendChild(text_tx_rate);
+        m_root->insert("network", data);
     }
     else
-        {
-            m_root->appendChild(*m_activated_network);
-            QDomText text_activated_network = m_doc->createTextNode("false");
-            m_activated_network->appendChild(text_activated_network);
-        }
+    {
+        m_activated_network->insert("activated", "false");
+        m_root->insert("network", *m_activated_network);
+    }
 
 
     if (activated_uptime)
     {
-        QDomElement m_time = m_doc->createElement("time");
-        QDomElement m_days = m_doc->createElement("days");
-
+        QVariantMap data;
 
         uptime = new Uptime();
 
-        m_root->appendChild(*m_activated_uptime);
-        QDomText text_activated_uptime = m_doc->createTextNode("true");
-        m_activated_uptime->appendChild(text_activated_uptime);
+        data.insert("activated", "true");
+        data.insert("time", uptime->time);
+        data.insert("days", uptime->days);
 
-
-        QDomElement m_uptime = m_doc->createElement("uptime");
-        m_root->appendChild(m_uptime);
-
-
-        m_uptime.appendChild(m_time);
-        QDomText text_time = m_doc->createTextNode(uptime->time);
-        m_time.appendChild(text_time);
-
-        m_uptime.appendChild(m_days);
-        QDomText text_days = m_doc->createTextNode(uptime->days);
-        m_days.appendChild(text_days);
-    } else
+        m_root->insert("uptime", data);
+    }
+    else
     {
-        m_root->appendChild(*m_activated_uptime);
-        QDomText text_activated_uptime = m_doc->createTextNode("false");
-        m_activated_uptime->appendChild(text_activated_uptime);
+        m_activated_uptime->insert("activated", "false");
+        m_root->insert("uptime", *m_activated_uptime);
     }
 
-
-//    m_shell = new QDomElement(m_doc->createElement("shell"));
-//    m_user = new QDomElement(m_doc->createElement("user"));
 
 
     if (activated_load)
     {
-       QDomElement m_loadavg0 = m_doc->createElement("loadavg0");
-       QDomElement m_loadavg1 = m_doc->createElement("loadavg1");
-       QDomElement m_loadavg2 = m_doc->createElement("loadavg2");
-
+        QVariantMap data;
 
        loadavg = new LoadAvg();
 
-       m_root->appendChild(*m_activated_load);
-       QDomText text_activated_load = m_doc->createTextNode("true");
-       m_activated_load->appendChild(text_activated_load);
+       data.insert("activated", "true");
+       data.insert("loadavg0", loadavg->loadavg0);
+       data.insert("loadavg1", loadavg->loadavg1);
+       data.insert("loadavg2", loadavg->loadavg2);
 
+       m_root->insert("load", data);
 
-       QDomElement m_load = m_doc->createElement("load");
-       m_root->appendChild(m_load);
-
-
-       m_load.appendChild(m_loadavg0);
-       QDomText text_loadavg0 = m_doc->createTextNode(loadavg->loadavg0);
-       m_loadavg0.appendChild(text_loadavg0);
-
-       m_load.appendChild(m_loadavg1);
-       QDomText text_loadavg1 = m_doc->createTextNode(loadavg->loadavg1);
-       m_loadavg1.appendChild(text_loadavg1);
-
-       m_load.appendChild(m_loadavg2);
-       QDomText text_loadavg2 = m_doc->createTextNode(loadavg->loadavg2);
-       m_loadavg2.appendChild(text_loadavg2);
    } else
    {
-       m_root->appendChild(*m_activated_load);
-       QDomText text_activated_load = m_doc->createTextNode("false");
-       m_activated_load->appendChild(text_activated_load);
+       m_activated_load->insert("activated", "false");
+       m_root->insert("load", *m_activated_load);
    }
 
 
     if (activated_hardware)
     {
-        QDomElement m_cpu_vendor = m_doc->createElement("vendor");
-        QDomElement m_cpu_model = m_doc->createElement("model");
-        QDomElement m_cpu_mhz = m_doc->createElement("mhz");
-        QDomElement m_cpu_cache_size = m_doc->createElement("cache_size");
-        QDomElement m_cpu_number = m_doc->createElement("number");
-        QDomElement m_cpu_total_cores = m_doc->createElement("total_cores");
-        QDomElement m_cpu_total_sockets = m_doc->createElement("total_sockets");
-        QDomElement m_cpu_cores_per_socket = m_doc->createElement("cores_per_socket");
-
+        QVariantMap data;
 
         cpu = new Cpu();
 
+        data.insert("activated", "true");
+        data.insert("vendor", cpu->vendor);
+        data.insert("model", cpu->model);
+        data.insert("mhz", cpu->mhz);
+        data.insert("cache_size", cpu->cache_size);
+        data.insert("number", cpu->number);
+        data.insert("total_cores", cpu->total_cores);
+        data.insert("total_sockets", cpu->total_sockets);
+        data.insert("cores_per_sockets", cpu->cores_per_socket);
 
-        m_root->appendChild(*m_activated_hardware);
-        QDomText text_activated_hardware = m_doc->createTextNode("true");
-        m_activated_hardware->appendChild(text_activated_hardware);
-
-
-        QDomElement m_cpu_hardware = m_doc->createElement("cpu_hardware");
-        m_root->appendChild(m_cpu_hardware);
-
-
-        m_cpu_hardware.appendChild(m_cpu_vendor);
-        QDomText text_cpu_vendor = m_doc->createTextNode(cpu->vendor);
-        m_cpu_vendor.appendChild(text_cpu_vendor);
-
-
-        m_cpu_hardware.appendChild(m_cpu_model);
-        QDomText text_cpu_model = m_doc->createTextNode(cpu->model);
-        m_cpu_model.appendChild(text_cpu_model);
-
-
-        m_cpu_hardware.appendChild(m_cpu_mhz);
-        QDomText text_cpu_mhz = m_doc->createTextNode(cpu->mhz);
-        m_cpu_mhz.appendChild(text_cpu_mhz);
-
-
-        m_cpu_hardware.appendChild(m_cpu_cache_size);
-        QDomText text_cpu_cache_size = m_doc->createTextNode(cpu->cache_size);
-        m_cpu_cache_size.appendChild(text_cpu_cache_size);
-
-
-        m_cpu_hardware.appendChild(m_cpu_number);
-        QDomText text_cpu_number = m_doc->createTextNode(cpu->number);
-        m_cpu_number.appendChild(text_cpu_number);
-
-
-        m_cpu_hardware.appendChild(m_cpu_total_cores);
-        QDomText text_cpu_total_cores = m_doc->createTextNode(cpu->total_cores);
-        m_cpu_total_cores.appendChild(text_cpu_total_cores);
-
-
-        m_cpu_hardware.appendChild(m_cpu_total_sockets);
-        QDomText text_cpu_total_sockets = m_doc->createTextNode(cpu->total_sockets);
-        m_cpu_total_sockets.appendChild(text_cpu_total_sockets);
-
-
-        m_cpu_hardware.appendChild(m_cpu_cores_per_socket);
-        QDomText text_cpu_cores_per_socket = m_doc->createTextNode(cpu->cores_per_socket);
-        m_cpu_cores_per_socket.appendChild(text_cpu_cores_per_socket);
+        m_root->insert("cpu_hardware", data);
     }
     else
     {
-        m_root->appendChild(*m_activated_hardware);
-        QDomText text_activated_hardware = m_doc->createTextNode("false");
-        m_activated_hardware->appendChild(text_activated_hardware);
+        m_activated_hardware->insert("activated", "false");
+        m_root->insert("cpu_hardware", *m_activated_hardware);
+
     }
-
-
-
 
 
     if (activated_memory)
     {
-        QDomElement m_mem_ram = m_doc->createElement("mem_ram");
-        QDomElement m_mem_total = m_doc->createElement("mem_total");
-        QDomElement m_mem_used = m_doc->createElement("mem_used");
-        QDomElement m_mem_free = m_doc->createElement("mem_free");
-        QDomElement m_mem_actual_free = m_doc->createElement("mem_actual_free");
-        QDomElement m_mem_actual_used = m_doc->createElement("mem_actual_used");
-        QDomElement m_mem_actual_free_percent = m_doc->createElement("mem_actual_free_percent");
-        QDomElement m_mem_actual_used_percent = m_doc->createElement("mem_actual_used_percent");
-
-        QDomElement m_swap_total = m_doc->createElement("swap_total");
-        QDomElement m_swap_used = m_doc->createElement("swap_used");
-        QDomElement m_swap_free = m_doc->createElement("swap_free");
-        QDomElement m_swap_page_in = m_doc->createElement("swap_page_in");
-        QDomElement m_swap_page_out = m_doc->createElement("swap_page_out");
-
+        QVariantMap data;
 
 
         mem = new Mem();
         swap = new Swap();
 
-        m_root->appendChild(*m_activated_memory);
-        QDomText text_activated_memory = m_doc->createTextNode("true");
-        m_activated_memory->appendChild(text_activated_memory);
+        data.insert("activated", "true");
 
 
-
-        QDomElement m_memory = m_doc->createElement("memory");
-        m_root->appendChild(m_memory);
-
-
-
-        m_memory.appendChild(m_mem_ram);
-        QDomText text_mem_ram = m_doc->createTextNode(mem->ram);
-        m_mem_ram.appendChild(text_mem_ram);
-
-
-        m_memory.appendChild(m_mem_total);
-        QDomText text_mem_total = m_doc->createTextNode(mem->total);
-        m_mem_total.appendChild(text_mem_total);
-
-        m_memory.appendChild(m_mem_used);
-        QDomText text_mem_used = m_doc->createTextNode(mem->used);
-        m_mem_used.appendChild(text_mem_used);
-
-        m_memory.appendChild(m_mem_free);
-        QDomText text_mem_free = m_doc->createTextNode(mem->free);
-        m_mem_free.appendChild(text_mem_free);
-
-        m_memory.appendChild(m_mem_actual_free);
-        QDomText text_mem_actual_free = m_doc->createTextNode(mem->actual_free);
-        m_mem_actual_free.appendChild(text_mem_actual_free);
-
-        m_memory.appendChild(m_mem_actual_used);
-        QDomText text_mem_actual_used = m_doc->createTextNode(mem->actual_used);
-        m_mem_actual_used.appendChild(text_mem_actual_used);
+        data.insert("mem_ram", mem->ram);
+        data.insert("mem_total", mem->ram);
+        data.insert("mem_used", mem->ram);
+        data.insert("mem_free", mem->ram);
+        data.insert("mem_actual_free", mem->ram);
+        data.insert("mem_actual_used", mem->ram);
+        data.insert("mem_actual_free_percent", mem->ram);
+        data.insert("mem_actual_used_percent", mem->ram);
+        data.insert("swap_total", mem->ram);
+        data.insert("swap_used", mem->ram);
+        data.insert("swap_free", mem->ram);
+        data.insert("swap_page_in", mem->ram);
+        data.insert("m_swap_page_out", mem->ram);
 
 
-        m_memory.appendChild(m_mem_actual_free_percent);
-        QDomText text_mem_actual_free_percent = m_doc->createTextNode(mem->actual_free_percent);
-        m_mem_actual_free_percent.appendChild(text_mem_actual_free_percent);
-
-        m_memory.appendChild(m_mem_actual_used_percent);
-        QDomText text_mem_actual_used_percent = m_doc->createTextNode(mem->actual_used_percent);
-        m_mem_actual_used_percent.appendChild(text_mem_actual_used_percent);
-
-
-        m_memory.appendChild(m_swap_total);
-        QDomText text_swap_total = m_doc->createTextNode(swap->total);
-        m_swap_total.appendChild(text_swap_total);
-
-        m_memory.appendChild(m_swap_used);
-        QDomText text_swap_used = m_doc->createTextNode(swap->used);
-        m_swap_used.appendChild(text_swap_used);
-
-        m_memory.appendChild(m_swap_free);
-        QDomText text_swap_free = m_doc->createTextNode(swap->free);
-        m_swap_free.appendChild(text_swap_free);
-
-        m_memory.appendChild(m_swap_page_in);
-        QDomText text_swap_page_in = m_doc->createTextNode(swap->page_in);
-        m_swap_page_in.appendChild(text_swap_page_in);
-
-        m_memory.appendChild(m_swap_page_out);
-        QDomText text_swap_page_out = m_doc->createTextNode(swap->page_out);
-        m_swap_page_out.appendChild(text_swap_page_out);
-    } else
-    {
-        m_root->appendChild(*m_activated_memory);
-        QDomText text_activated_memory = m_doc->createTextNode("false");
-        m_activated_memory->appendChild(text_activated_memory);
+        m_root->insert("memory", data);
     }
-
-
-
-
+    else
+    {
+        m_activated_memory->insert("activated", "false");
+        m_root->insert("memory", *m_activated_memory);
+    }
 
 
     if (activated_cpu)
     {
-        QDomElement m_cpu_user = m_doc->createElement("user");
-        QDomElement m_cpu_sys = m_doc->createElement("sys");
-        QDomElement m_cpu_nice = m_doc->createElement("nice");
-        QDomElement m_cpu_idle = m_doc->createElement("idle");
-        QDomElement m_cpu_wait = m_doc->createElement("wait");
-        QDomElement m_cpu_irq = m_doc->createElement("irq");
-        QDomElement m_cpu_soft_irq = m_doc->createElement("soft_irq");
-        QDomElement m_cpu_stolen = m_doc->createElement("stolen");
-        QDomElement m_cpu_combined = m_doc->createElement("combined");
-        QDomElement m_cpu_total = m_doc->createElement("total");
-
+        QVariantMap data;
 
         cpustat = new CpuStat();
 
-        m_root->appendChild(*m_activated_cpu);
-        QDomText text_activated_cpu = m_doc->createTextNode("true");
-        m_activated_cpu->appendChild(text_activated_cpu);
+        data.insert("activated", "true");
+        data.insert("user", cpustat->user);
+        data.insert("sys", cpustat->sys);
+        data.insert("nice", cpustat->nice);
+        data.insert("idle", cpustat->idle);
+        data.insert("wait", cpustat->wait);
+        data.insert("irq", cpustat->irq);
+        data.insert("soft_irq", cpustat->soft_irq);
+        data.insert("stolen", cpustat->stolen);
+        data.insert("combined", cpustat->combined);
+        data.insert("total", cpustat->total);
 
-
-        QDomElement m_cpu_usage = m_doc->createElement("cpu_usage");
-        m_root->appendChild(m_cpu_usage);
-
-
-        m_cpu_usage.appendChild(m_cpu_user);
-        QDomText text_cpu_user = m_doc->createTextNode(cpustat->user);
-        m_cpu_user.appendChild(text_cpu_user);
-
-
-
-        m_cpu_usage.appendChild(m_cpu_sys);
-        QDomText text_cpu_sys = m_doc->createTextNode(cpustat->sys);
-        m_cpu_sys.appendChild(text_cpu_sys);
-
-
-
-        m_cpu_usage.appendChild(m_cpu_nice);
-        QDomText text_cpu_nice = m_doc->createTextNode(cpustat->nice);
-        m_cpu_nice.appendChild(text_cpu_nice);
-
-
-        m_cpu_usage.appendChild(m_cpu_idle);
-        QDomText text_cpu_idle = m_doc->createTextNode(cpustat->idle);
-        m_cpu_idle.appendChild(text_cpu_idle);
-
-        m_cpu_usage.appendChild(m_cpu_wait);
-        QDomText text_cpu_wait = m_doc->createTextNode(cpustat->wait);
-        m_cpu_wait.appendChild(text_cpu_wait);
-
-        m_cpu_usage.appendChild(m_cpu_irq);
-        QDomText text_cpu_irq = m_doc->createTextNode(cpustat->irq);
-        m_cpu_irq.appendChild(text_cpu_irq);
-
-        m_cpu_usage.appendChild(m_cpu_soft_irq);
-        QDomText text_cpu_soft_irq = m_doc->createTextNode(cpustat->soft_irq);
-        m_cpu_soft_irq.appendChild(text_cpu_soft_irq);
-
-
-        m_cpu_usage.appendChild(m_cpu_stolen);
-        QDomText text_cpu_stolen = m_doc->createTextNode(cpustat->stolen);
-        m_cpu_stolen.appendChild(text_cpu_stolen);
-
-        m_cpu_usage.appendChild(m_cpu_combined);
-        QDomText text_cpu_combined = m_doc->createTextNode(cpustat->combined);
-        m_cpu_combined.appendChild(text_cpu_combined);
-
-
-        m_cpu_usage.appendChild(m_cpu_total);
-        QDomText text_cpu_total = m_doc->createTextNode(cpustat->total);
-        m_cpu_total.appendChild(text_cpu_total);
+        m_root->insert("cpu_usage", data);
     }
     else
     {
-        m_root->appendChild(*m_activated_cpu);
-        QDomText text_activated_cpu = m_doc->createTextNode("false");
-        m_activated_cpu->appendChild(text_activated_cpu);
+        m_activated_cpu->insert("activated", "false");
+        m_root->insert("cpu_usage", *m_activated_cpu);
     }
 
 
 
-
-
-    /*
-    for (int i = 0; i < cpu.cpus.size(); ++i)
-    {
-        m_cpu = new QDomElement(m_doc->createElement(QString("cpu%1").arg(tmp.setNum(i))));
-
-        m_root->appendChild(*m_cpu);
-        QDomText text_cpu = m_doc->createTextNode(cpu.cpus.at(i));
-        m_cpu->appendChild(text_cpu);
-    }*/
 
 
     // CPU
@@ -1313,59 +977,33 @@ void Datas::Populate(QByteArray *a_datas)
     // PROCESS
     if (activated_process)
     {
+        QVariantMap data;
+
         proclist = new ProcList();
-
-        m_root->appendChild(*m_activated_process);
-        QDomText text_activated_process = m_doc->createTextNode("true");
-        m_activated_process->appendChild(text_activated_process);
-
-
-        QDomElement m_process = m_doc->createElement("process");
-        m_root->appendChild(m_process);
-
-        QDomElement m_process_number = m_doc->createElement("process_number");
-        m_process.appendChild(m_process_number);
 
         QString counter;
         counter.setNum(proclist->stack.count());
 
-        QDomText text_process_number = m_doc->createTextNode(counter);
-        m_process_number.appendChild(text_process_number);
+        data.insert("activated", "true");
+        data.insert("process_number", counter);
 
+
+        QVariantList processus_list;
 
         while (!proclist->stack.isEmpty())
         {
-          //  qDebug() << "stack length : " << proclist->stack.count();                    
+          //  qDebug() << "stack length : " << proclist->stack.count();
             Process procs = proclist->stack.pop();
           //  qDebug() << "name : " << procs->state_name << " " << " pid : " << procs->pid;
 
 
-           QDomElement m_processus = m_doc->createElement("processus");
-           m_process.appendChild(m_processus);
+           QVariantMap m_processus;
+           //m_process.appendChild(m_processus);
 
-
-           QDomElement m_pid = m_doc->createElement("pid");
-           m_processus.appendChild(m_pid);
-           QDomText text_pid = m_doc->createTextNode(procs.pid);
-           m_pid.appendChild(text_pid);
-
-
-           QDomElement m_state_name = m_doc->createElement("state_name");
-           m_processus.appendChild(m_state_name);
-           QDomText text_state_name = m_doc->createTextNode(procs.state_name);
-           m_state_name.appendChild(text_state_name);
-
-
-           QDomElement m_state_state = m_doc->createElement("state_state");
-           m_processus.appendChild(m_state_state);
-           QDomText text_state_state = m_doc->createTextNode(procs.state_state);
-           m_state_state.appendChild(text_state_state);
-
-
-           QDomElement m_state_ppid = m_doc->createElement("state_ppid");
-           m_processus.appendChild(m_state_ppid);
-           QDomText text_state_ppid = m_doc->createTextNode(procs.state_ppid);
-           m_state_ppid.appendChild(text_state_ppid);
+           m_processus.insert("pid", procs.pid);
+           m_processus.insert("state_name", procs.state_name);
+           m_processus.insert("state_state", procs.state_state);
+           m_processus.insert("sate_ppid", procs.state_ppid);
 
 /*
            m_state_tty = new QDomElement(m_doc->createElement("state_tty"));
@@ -1374,103 +1012,41 @@ void Datas::Populate(QByteArray *a_datas)
            m_state_tty->appendChild(text_state_tty);
 */
 
-           QDomElement m_state_priority = m_doc->createElement("state_priority");
-           m_processus.appendChild(m_state_priority);
-           QDomText text_state_priority = m_doc->createTextNode(procs.state_priority);
-           m_state_priority.appendChild(text_state_priority);
+           m_processus.insert("state_priority", procs.state_priority);
+           m_processus.insert("state_nice", procs.state_nice);
+           m_processus.insert("state_processor", procs.state_processor);
+           m_processus.insert("state_theads", procs.state_threads);
+           m_processus.insert("mem_size", procs.mem_size);
+           m_processus.insert("mem_resident", procs.mem_resident);
+           m_processus.insert("mem_share", procs.mem_share);
+           m_processus.insert("mem_minor_faults", procs.mem_minor_faults);
+           m_processus.insert("mem_major_faults", procs.mem_major_faults);
+           m_processus.insert("mem_page_faults", procs.mem_page_faults);
+           m_processus.insert("time_start_time", procs.time_start_time);
+           m_processus.insert("time_user", procs.time_user);
+           m_processus.insert("time_sys", procs.time_sys);
+           m_processus.insert("time_total", procs.time_total);
 
-
-           QDomElement m_state_nice = m_doc->createElement("state_nice");
-           m_processus.appendChild(m_state_nice);
-           QDomText text_state_nice = m_doc->createTextNode(procs.state_nice);
-           m_state_nice.appendChild(text_state_nice);
-
-
-           QDomElement m_state_processor = m_doc->createElement("state_processor");
-           m_processus.appendChild(m_state_processor);
-           QDomText text_state_processor = m_doc->createTextNode(procs.state_processor);
-           m_state_processor.appendChild(text_state_processor);
-
-
-           QDomElement m_state_threads = m_doc->createElement("state_threads");
-           m_processus.appendChild(m_state_threads);
-           QDomText text_state_threads = m_doc->createTextNode(procs.state_threads);
-           m_state_threads.appendChild(text_state_threads);
-
-
-           QDomElement m_mem_size = m_doc->createElement("mem_size");
-           m_processus.appendChild(m_mem_size);
-           QDomText text_mem_size = m_doc->createTextNode(procs.mem_size);
-           m_mem_size.appendChild(text_mem_size);
-
-
-           QDomElement m_mem_resident = m_doc->createElement("mem_resident");
-           m_processus.appendChild(m_mem_resident);
-           QDomText text_mem_resident = m_doc->createTextNode(procs.mem_resident);
-           m_mem_resident.appendChild(text_mem_resident);
-
-
-           QDomElement m_mem_share = m_doc->createElement("mem_share");
-           m_processus.appendChild(m_mem_share);
-           QDomText text_mem_share = m_doc->createTextNode(procs.mem_share);
-           m_mem_share.appendChild(text_mem_share);
-
-
-           QDomElement m_mem_minor_faults = m_doc->createElement("mem_minor_faults");
-           m_processus.appendChild(m_mem_minor_faults);
-           QDomText text_mem_minor_faults = m_doc->createTextNode(procs.mem_minor_faults);
-           m_mem_minor_faults.appendChild(text_mem_minor_faults);
-
-
-           QDomElement m_mem_major_faults = m_doc->createElement("mem_major_faults");
-           m_processus.appendChild(m_mem_major_faults);
-           QDomText text_mem_major_faults = m_doc->createTextNode(procs.mem_major_faults);
-           m_mem_major_faults.appendChild(text_mem_major_faults);
-
-
-           QDomElement m_mem_page_faults = m_doc->createElement("mem_page_faults");
-           m_processus.appendChild(m_mem_page_faults);
-           QDomText text_mem_page_faults = m_doc->createTextNode(procs.mem_page_faults);
-           m_mem_page_faults.appendChild(text_mem_page_faults);
-
-
-           QDomElement m_time_start_time = m_doc->createElement("time_start_time");
-           m_processus.appendChild(m_time_start_time);
-           QDomText text_time_start_time = m_doc->createTextNode(procs.time_start_time);
-           m_time_start_time.appendChild(text_time_start_time);
-
-
-           QDomElement m_time_user = m_doc->createElement("time_user");
-           m_processus.appendChild(m_time_user);
-           QDomText text_time_user = m_doc->createTextNode(procs.time_user);
-           m_time_user.appendChild(text_time_user);
-
-
-           QDomElement m_time_sys = m_doc->createElement("time_sys");
-           m_processus.appendChild(m_time_sys);
-           QDomText text_time_sys = m_doc->createTextNode(procs.time_sys);
-           m_time_sys.appendChild(text_time_sys);
-
-
-           QDomElement m_time_total = m_doc->createElement("time_total");
-           m_processus.appendChild(m_time_total);
-           QDomText text_time_total = m_doc->createTextNode(procs.time_total);
-           m_time_total.appendChild(text_time_total);
+           processus_list << m_processus;
         }
-
-    } else
+        data.insert("processus", processus_list);
+        m_root->insert("process", data);
+    }
+    else
     {
-        m_root->appendChild(*m_activated_process);
-        QDomText text_activated_process = m_doc->createTextNode("false");
-        m_activated_process->appendChild(text_activated_process);
+        m_activated_process->insert("activated", "false");
+        m_root->insert("process", *m_activated_process);
     }
 
 
+    QFile file("/tmp/geekast.json");
+    file.open(QIODevice::WriteOnly);
+    QTextStream out(&file);   // we will serialize the data into the file
 
-    // *******************************************************
+    QJson::Serializer serializer;
+    QByteArray json = serializer.serialize(*m_root);
+    out << json;
 
-
-    QTextStream out(a_datas);
-    m_doc->save(out, 0);
-    qDebug() << "doc : " << m_doc->toString(0);
+    *a_datas = json;
 }
+

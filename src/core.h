@@ -33,8 +33,9 @@
 #include <QUuid>
 #include <QDomDocument>
 #include <QStack>
+#include <QFile>
 
-#include <qjson/parser.h>
+#include <qjson/serializer.h>
 
 extern "C" {
 #include "sigar.h"
@@ -344,20 +345,19 @@ class Datas
 
 
   protected:
-    QDomDocument *m_doc;
-    QDomElement *m_root;
-    QDomElement *m_profil;
-    QDomElement *m_public;
-    QDomElement *m_uuid;
-    QDomElement *m_device;
+    QVariantMap *m_root;
+    QVariantMap *m_profil;
+    QVariantMap *m_public;
+    QVariantMap *m_uuid;
+    QVariantMap *m_device;
 
-    QDomElement *m_activated_network;
-    QDomElement *m_activated_uptime;
-    QDomElement *m_activated_load;
-    QDomElement *m_activated_hardware;
-    QDomElement *m_activated_memory;
-    QDomElement *m_activated_cpu;
-    QDomElement *m_activated_process;
+    QVariantMap *m_activated_network;
+    QVariantMap *m_activated_uptime;
+    QVariantMap *m_activated_load;
+    QVariantMap *m_activated_hardware;
+    QVariantMap *m_activated_memory;
+    QVariantMap *m_activated_cpu;
+    QVariantMap *m_activated_process;
 
     private:
         System system;
@@ -374,23 +374,7 @@ class Datas
 };
 
 
-
 //! [0]
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 #endif // CORE_H
