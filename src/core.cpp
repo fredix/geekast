@@ -911,18 +911,18 @@ void Datas::Populate(QByteArray *a_datas)
 
 
         data.insert("mem_ram", mem->ram);
-        data.insert("mem_total", mem->ram);
-        data.insert("mem_used", mem->ram);
-        data.insert("mem_free", mem->ram);
-        data.insert("mem_actual_free", mem->ram);
-        data.insert("mem_actual_used", mem->ram);
-        data.insert("mem_actual_free_percent", mem->ram);
-        data.insert("mem_actual_used_percent", mem->ram);
-        data.insert("swap_total", mem->ram);
-        data.insert("swap_used", mem->ram);
-        data.insert("swap_free", mem->ram);
-        data.insert("swap_page_in", mem->ram);
-        data.insert("m_swap_page_out", mem->ram);
+        data.insert("mem_total", mem->total);
+        data.insert("mem_used", mem->used);
+        data.insert("mem_free", mem->free);
+        data.insert("mem_actual_free", mem->actual_free);
+        data.insert("mem_actual_used", mem->actual_used);
+        data.insert("mem_actual_free_percent", mem->actual_free_percent);
+        data.insert("mem_actual_used_percent", mem->actual_used_percent);
+        data.insert("swap_total", swap->total);
+        data.insert("swap_used", swap->used);
+        data.insert("swap_free", swap->free);
+        data.insert("swap_page_in", swap->page_in);
+        data.insert("m_swap_page_out", swap->page_out);
 
 
         m_root->insert("memory", data);
