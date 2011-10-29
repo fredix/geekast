@@ -778,7 +778,7 @@ Datas::~Datas()
 
 void Datas::Populate(QByteArray *a_datas)
 {
-    qDebug() << "JDatas::Populate";
+    qDebug() << "Datas::Populate";
 
     m_root->insert("profil", "default");
     m_root->insert("public", public_host?"true":"false");
@@ -887,7 +887,7 @@ void Datas::Populate(QByteArray *a_datas)
         data.insert("number", cpu->number);
         data.insert("total_cores", cpu->total_cores);
         data.insert("total_sockets", cpu->total_sockets);
-        data.insert("cores_per_sockets", cpu->cores_per_socket);
+        data.insert("cores_per_socket", cpu->cores_per_socket);
 
         m_root->insert("cpu_hardware", data);
     }

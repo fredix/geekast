@@ -25,15 +25,11 @@
 #define PUSH_H
 
 #include <QString>
-//#include <QHttp>
 #include <QtNetwork>
 #include <QAuthenticator>
 #include <QTest>
-//#include <qtf_http.h>
 #include <QDomDocument>
 
-
-//using namespace QteiFul;
 
 class Push : public QObject
 {
@@ -63,16 +59,12 @@ private:
     QUrl url;
     QNetworkRequest m_request;
     QHttpRequestHeader m_header;
-    //QHttp m_http;
-    //QFile m_file;
-    //QtfHttp http;    
     QAuthenticator *m_auth;
     QString m_post_response;
     int m_http_error;
     QDomDocument m_xml_response;
     QDomElement m_root;
     QDomNode m_node;
-
 };
 //! [0]
 

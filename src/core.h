@@ -31,11 +31,11 @@
 #include <QDebug>
 #include <QDialog>
 #include <QUuid>
-#include <QDomDocument>
 #include <QStack>
 #include <QFile>
 
 #include <qjson/serializer.h>
+
 
 extern "C" {
 #include "sigar.h"

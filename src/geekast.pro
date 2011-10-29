@@ -24,6 +24,11 @@ LIBS += -L/externals/qxmpp/lib/libqxmpp.a \
      -lsigar-amd64-linux \
      -lqjson
 
+INCLUDEPATH += /usr/include/qxt/
+INCLUDEPATH += /usr/include/qxt/QxtCore
+INCLUDEPATH += ./externals/
+INCLUDEPATH += ./externals/qxmpp/src/
+INCLUDEPATH += /usr/include/qjson
 # LIBS += -LC:\code\hyperic-sigar-1.6.3\sigar-bin\lib -lsigar-x86-winnt
 # INCLUDEPATH += C:\code\hyperic-sigar-1.6.3\sigar-bin\include
 #INCLUDEPATH += external/hyperic-sigar-1.6.3/sigar-bin/include
