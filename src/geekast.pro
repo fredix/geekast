@@ -12,22 +12,24 @@ SOURCES += main.cpp \
     core.cpp \
     core_mac.cpp \
     push.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    xmpp_client.cpp
 HEADERS += core_linux.h \
     core.h \
     push.h \
-    mainwindow.h
+    mainwindow.h \
+    xmpp_client.h
 FORMS += mainwindow.ui
 RESOURCES += ../geekast.qrc
 #LIBS += -Lexternal/hyperic-sigar-1.6.3/sigar-bin/lib/ \
-LIBS += -L/externals/qxmpp/lib/libqxmpp.a \
-     -lsigar-amd64-linux \
-     -lqjson
+LIBS += /usr/local/lib/libqxmpp-3.0.a \
+        -lsigar \
+        -lqjson
 
 INCLUDEPATH += /usr/include/qxt/
 INCLUDEPATH += /usr/include/qxt/QxtCore
 INCLUDEPATH += ./externals/
-INCLUDEPATH += ./externals/qxmpp/src/
+INCLUDEPATH += ./externals/qxmpp-0.3.0/src/
 INCLUDEPATH += /usr/include/qjson
 # LIBS += -LC:\code\hyperic-sigar-1.6.3\sigar-bin\lib -lsigar-x86-winnt
 # INCLUDEPATH += C:\code\hyperic-sigar-1.6.3\sigar-bin\include

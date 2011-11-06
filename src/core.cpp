@@ -776,7 +776,7 @@ Datas::~Datas()
 
 
 
-void Datas::Populate(QByteArray *a_datas)
+void Datas::Populate(QVariantMap *a_datas)
 {
     qDebug() << "Datas::Populate";
 
@@ -787,18 +787,18 @@ void Datas::Populate(QByteArray *a_datas)
 
     // SYSINFO
     QVariantMap data;
-    data.insert("name", sysinfo->name);
-    data.insert("version", sysinfo->version);
-    data.insert("architecture", sysinfo->arch);
-    data.insert("machine", sysinfo->machine);
-    data.insert("description", sysinfo->description);
-    data.insert("patch_level", sysinfo->patch_level);
-    data.insert("vendor", sysinfo->vendor);
-    data.insert("vendor_name", sysinfo->vendor_name);
-    data.insert("vendor_version", sysinfo->vendor_version);
-    data.insert("vendor_code_name", sysinfo->vendor_code_name);
-    data.insert("os_type", system.m_os_type);
-    data.insert("os_base", system.m_os_base);
+    data.insert("name", sysinfo->name.toLower());
+    data.insert("version", sysinfo->version.toLower());
+    data.insert("architecture", sysinfo->arch.toLower());
+    data.insert("machine", sysinfo->machine.toLower());
+    data.insert("description", sysinfo->description.toLower());
+    data.insert("patch_level", sysinfo->patch_level.toLower());
+    data.insert("vendor", sysinfo->vendor.toLower());
+    data.insert("vendor_name", sysinfo->vendor_name.toLower());
+    data.insert("vendor_version", sysinfo->vendor_version.toLower());
+    data.insert("vendor_code_name", sysinfo->vendor_code_name.toLower());
+    data.insert("os_type", system.m_os_type.toLower());
+    data.insert("os_base", system.m_os_base.toLower());
 
     m_root->insert("sysinfo", data);
 
@@ -1046,7 +1046,8 @@ void Datas::Populate(QByteArray *a_datas)
     QJson::Serializer serializer;
     QByteArray json = serializer.serialize(*m_root);
     out << json;
+    file.close();
 
-    *a_datas = json;
+    *a_datas = *m_root;
 }
 

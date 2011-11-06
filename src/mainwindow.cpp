@@ -183,7 +183,7 @@ void MainWindow::on_pushButton_infos_clicked()
 
 void MainWindow::on_pushButton_push_clicked()
 {
-    p_datas = new QByteArray;
+    p_datas = new QVariantMap;
 
     if (!datas) datas = new Datas();
 
@@ -191,7 +191,7 @@ void MainWindow::on_pushButton_push_clicked()
     refreshStats();
 
     datas->Populate(p_datas);
-    push.Payload(p_datas);
+    push.Payload_http(p_datas);
 
     if (push.m_uuid != ui->lineEdit_uuid->text())
     {
@@ -331,3 +331,25 @@ void MainWindow::on_checkBox_fs_clicked(bool checked)
     //datas->activated_fs = settings->value("activated_fs").toBool();
 }
 
+
+void MainWindow::on_pushButton_xmpp_clicked()
+{
+    p_datas = new QVariantMap;
+
+    if (!datas) datas = new Datas();
+
+    refreshStats();
+
+    datas->Populate(p_datas);
+    push.Payload_xmpp(p_datas);
+
+    if (push.m_uuid != ui->lineEdit_uuid->text())
+    {
+        ui->lineEdit_uuid->setText(push.m_uuid);
+        settings->setValue("uuid",push.m_uuid);
+    }
+
+    delete p_datas;
+    delete datas;
+    datas = NULL;
+}

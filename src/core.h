@@ -332,7 +332,7 @@ class Datas
   public:
     Datas();
     ~Datas();
-    void Populate(QByteArray *a_datas);
+    void Populate(QVariantMap *a_datas);
     bool activated_hardware;
     bool activated_uptime;
     bool activated_memory;

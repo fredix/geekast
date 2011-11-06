@@ -29,6 +29,8 @@
 #include <QAuthenticator>
 #include <QTest>
 #include <QDomDocument>
+#include <qjson/serializer.h>
+#include "xmpp_client.h"
 
 
 class Push : public QObject
@@ -38,7 +40,8 @@ class Push : public QObject
 public:
     Push(QObject *parent = 0);
     ~Push();
-    void Payload(QByteArray *ldatas);
+    void Payload_http(QVariantMap *ldatas);
+    void Payload_xmpp(QVariantMap *ldatas);
     QString m_credentials;
     QString m_server;
     QString m_uuid;
@@ -65,6 +68,8 @@ private:
     QDomDocument m_xml_response;
     QDomElement m_root;
     QDomNode m_node;
+
+    Xmpp_client m_xmpp_client;
 };
 //! [0]
 

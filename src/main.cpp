@@ -28,6 +28,9 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
+    QApplication::setOrganizationName("nodecast");
+    QApplication::setApplicationName("geekast");
+
     if (!QSystemTrayIcon::isSystemTrayAvailable()) {
         QMessageBox::critical(0, QObject::tr("Geekast"),
                               QObject::tr("I couldn't detect any system tray "
@@ -38,8 +41,6 @@ int main(int argc, char *argv[])
 
     //char * client_locale = setlocale(LC_NUMERIC,"");
     setlocale(LC_NUMERIC,"C");
-
-
 
     MainWindow w;
     w.show();

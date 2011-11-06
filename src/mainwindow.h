@@ -42,7 +42,7 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
-    QByteArray *p_datas;
+    QVariantMap *p_datas;
 
 protected:
     void changeEvent(QEvent *e);
@@ -88,6 +88,7 @@ private slots:
     void on_push_uuidChanged(QString uuid);
     void on_push_httpResponse(int http_error);
     void on_tray_show_hide(QSystemTrayIcon::ActivationReason reason);
+    void on_pushButton_xmpp_clicked();
 };
 
 #endif // MAINWINDOW_H
