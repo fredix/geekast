@@ -23,7 +23,7 @@
 
 #include <QObject>
 #include <QDebug>
-
+#include <QDomDocument>
 #include "QXmppMessage.h"
 #include "QXmppLogger.h"
 #include "QXmppClient.h"
@@ -36,11 +36,19 @@ class Xmpp_client : public QXmppClient
 public:
     Xmpp_client(QObject *parent = 0);
     ~Xmpp_client();
+    QString m_uuid;
 
 private:
     QXmppLogger m_logger;
     QXmppPresence subscribe;
 
+    QDomDocument m_xml_response;
+    QDomElement m_root;
+    QDomNode m_node;
+    QString m_post_response;
+
+signals:
+    void uuidChanged(QString uuid);
 
 public slots:
     void messageReceived(const QXmppMessage&);

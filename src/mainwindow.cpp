@@ -65,6 +65,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     this->connect(&push, SIGNAL(httpResponse(int)), SLOT(on_push_httpResponse(int)));
     this->connect(&push, SIGNAL(uuidChanged(QString)), SLOT(on_push_uuidChanged(QString)));
+    this->connect(&push.m_xmpp_client, SIGNAL(uuidChanged(QString)), SLOT(on_push_uuidChanged(QString)));
 
     m_timer = new QTimer(this);
     m_timer->setInterval(settings->value("refresh_rate").toInt()*60*1000);

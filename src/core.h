@@ -33,8 +33,7 @@
 #include <QUuid>
 #include <QStack>
 #include <QFile>
-
-#include <qjson/serializer.h>
+#include <QxtJSON>
 
 
 extern "C" {

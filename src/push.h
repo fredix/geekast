@@ -29,7 +29,7 @@
 #include <QAuthenticator>
 #include <QTest>
 #include <QDomDocument>
-#include <qjson/serializer.h>
+#include <QxtJSON>
 #include "xmpp_client.h"
 
 
@@ -45,6 +45,7 @@ public:
     QString m_credentials;
     QString m_server;
     QString m_uuid;
+    Xmpp_client m_xmpp_client;
 
 public slots:
     void slotRequestFinished(QNetworkReply *);
@@ -69,7 +70,6 @@ private:
     QDomElement m_root;
     QDomNode m_node;
 
-    Xmpp_client m_xmpp_client;
 };
 //! [0]
 

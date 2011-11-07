@@ -1043,8 +1043,7 @@ void Datas::Populate(QVariantMap *a_datas)
     file.open(QIODevice::WriteOnly);
     QTextStream out(&file);   // we will serialize the data into the file
 
-    QJson::Serializer serializer;
-    QByteArray json = serializer.serialize(*m_root);
+    QString json = QxtJSON::stringify(*m_root);
     out << json;
     file.close();
 

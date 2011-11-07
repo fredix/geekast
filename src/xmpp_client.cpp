@@ -35,7 +35,7 @@ Xmpp_client::Xmpp_client(QObject *parent) : QXmppClient(parent)
     check = connect(this, SIGNAL(presenceReceived(const QXmppPresence&)),
                     this, SLOT(presenceReceived(const QXmppPresence&)));
 
-//    this->logger()->setLoggingType(QXmppLogger::StdoutLogging);
+    this->logger()->setLoggingType(QXmppLogger::StdoutLogging);
 
     this->configuration().setJid("ncs@localhost");
     this->configuration().setPassword("scn");
@@ -69,6 +69,23 @@ void Xmpp_client::messageReceived(const QXmppMessage& message)
 
     //qDebug() << "Xmpp_client::messageReceived : OOOOOOOOOKKKKKKKKK : ";
     qDebug() << "Xmpp_client::messageReceived : FROM : " << from << " MSG : " << msg;
+
+
+    m_xml_response.setContent(msg);
+    m_root = m_xml_response.documentElement();
+
+
+    m_node = m_root.firstChild();
+    m_post_response = m_node.toElement().text();
+
+    if (m_node.toElement().tagName() == "uuid")
+    {
+        qDebug() << "node : " << m_node.toElement().tagName() << " : " << m_post_response;
+        m_uuid = m_post_response;
+        emit uuidChanged(m_uuid);
+        m_post_response = "";
+    }
+
 }
 
 

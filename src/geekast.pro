@@ -6,6 +6,7 @@ QT += network \
     xml
 TARGET = geekast
 TEMPLATE = app
+QXT     += core
 SOURCES += main.cpp \
     core_linux.cpp \
     core_windows.cpp \
@@ -24,13 +25,13 @@ RESOURCES += ../geekast.qrc
 #LIBS += -Lexternal/hyperic-sigar-1.6.3/sigar-bin/lib/ \
 LIBS += /usr/local/lib/libqxmpp-3.0.a \
         -lsigar \
-        -lqjson
+        -lQxtCore
 
+INCLUDEPATH += /usr/include/QxtCore
 INCLUDEPATH += /usr/include/qxt/
 INCLUDEPATH += /usr/include/qxt/QxtCore
 INCLUDEPATH += ./externals/
 INCLUDEPATH += ./externals/qxmpp-0.3.0/src/
-INCLUDEPATH += /usr/include/qjson
 # LIBS += -LC:\code\hyperic-sigar-1.6.3\sigar-bin\lib -lsigar-x86-winnt
 # INCLUDEPATH += C:\code\hyperic-sigar-1.6.3\sigar-bin\include
 #INCLUDEPATH += external/hyperic-sigar-1.6.3/sigar-bin/include
