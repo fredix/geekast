@@ -40,17 +40,38 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->lineEdit_password->setText(settings->value("password").toString());
     ui->lineEdit_uuid->setText(settings->value("uuid").toString());
 
+    ui->progressBar->setValue(0);
 
-    push.m_credentials  = settings->value("login").toString()+":"+settings->value("password").toString();
-    push.m_server = settings->value("server").toString();
-    push.m_uuid = settings->value("uuid").toString();
 
+    m_push = new Push();
+    m_push->m_credentials  = settings->value("login").toString()+":"+settings->value("password").toString();
+    m_push->m_server = settings->value("server").toString();
+    m_push->m_uuid = settings->value("uuid").toString();
+
+    m_push->m_xmpp_client->m_jid = settings->value("pub_uuid").toString() + "@" + settings->value("server").toString();;
+    m_push->m_xmpp_client->m_password = settings->value("uuid").toString();
+    m_push->m_xmpp_client->connection();
+
+    ui->push_method->setText("push method : " + m_push->m_push_method.toUpper());
 
 
     qDebug() << "activated network : " << settings->value("activated_network").toBool();
 
 
-    datas = new Datas();
+    m_getdatas_mutex = new QMutex();
+    m_getdatas_mutex->lock();
+
+    m_pushdatas_mutex = new QMutex();
+    m_pushdatas_mutex->lock();
+
+    p_datas = new QVariantMap;
+    m_datas = new Datas(p_datas, m_getdatas_mutex);
+
+
+    m_thread_getdatas = new QThread;
+    m_datas->moveToThread(m_thread_getdatas);
+    connect(m_thread_getdatas, SIGNAL(started()), m_datas, SLOT(Populate()));
+
     refreshStats();
 
 
@@ -63,13 +84,19 @@ MainWindow::MainWindow(QWidget *parent) :
     trayIcon->show();
 
 
-    this->connect(&push, SIGNAL(httpResponse(int)), SLOT(on_push_httpResponse(int)));
-    this->connect(&push, SIGNAL(uuidChanged(QString)), SLOT(on_push_uuidChanged(QString)));
-    this->connect(&push.m_xmpp_client, SIGNAL(uuidChanged(QString)), SLOT(on_push_uuidChanged(QString)));
+    this->connect(m_push, SIGNAL(httpResponse(int)), SLOT(on_push_httpResponse(int)));
+    this->connect(m_push->m_xmpp_client, SIGNAL(xmppResponse(QString)), SLOT(on_push_xmppResponse(QString)));
+    this->connect(m_push, SIGNAL(uuidChanged(QString)), SLOT(on_push_uuidChanged(QString)));
+    this->connect(m_push, SIGNAL(pub_uuidChanged(QString)), SLOT(on_push_pub_uuidChanged(QString)));
+
+    this->connect(m_push->m_xmpp_client, SIGNAL(uuidChanged(QString)), SLOT(on_push_uuidChanged(QString)));
+    this->connect(m_push->m_xmpp_client, SIGNAL(xmppConnection(bool)), SLOT(on_xmpp_connected(bool)));
 
     m_timer = new QTimer(this);
     m_timer->setInterval(settings->value("refresh_rate").toInt()*60*1000);
-    connect(m_timer, SIGNAL(timeout()), this, SLOT(on_pushButton_push_clicked()));
+    //connect(m_timer, SIGNAL(timeout()), this, SLOT(on_pushButton_push_clicked()));
+    connect(m_timer, SIGNAL(timeout()), this, SLOT(push_data()));
+
     m_timer->stop();
     //m_timer->start(1000);
 }
@@ -83,27 +110,27 @@ MainWindow::~MainWindow()
 void MainWindow::refreshStats()
 {
 
-    datas->activated_hardware = settings->value("activated_hardware").toBool();
-    ui->checkBox_hardware->setChecked(datas->activated_hardware);
-    datas->activated_uptime = settings->value("activated_uptime").toBool();
-    ui->checkBox_uptime->setChecked(datas->activated_uptime);
-    datas->activated_memory = settings->value("activated_memory").toBool();
-    ui->checkBox_memory->setChecked(datas->activated_memory);
-    datas->activated_load = settings->value("activated_load").toBool();
-    ui->checkBox_load->setChecked(datas->activated_load);
-    datas->activated_process = settings->value("activated_process").toBool();
-    ui->checkBox_process->setChecked(datas->activated_process);
-    datas->activated_network = settings->value("activated_network").toBool();
-    ui->checkBox_network->setChecked(datas->activated_network);
-    datas->activated_cpu = settings->value("activated_cpu").toBool();
-    ui->checkBox_cpu->setChecked(datas->activated_cpu);
-    datas->activated_fs = settings->value("activated_fs").toBool();
-    ui->checkBox_fs->setChecked(datas->activated_fs);
+    m_datas->activated_hardware = settings->value("activated_hardware").toBool();
+    ui->checkBox_hardware->setChecked(m_datas->activated_hardware);
+    m_datas->activated_uptime = settings->value("activated_uptime").toBool();
+    ui->checkBox_uptime->setChecked(m_datas->activated_uptime);
+    m_datas->activated_memory = settings->value("activated_memory").toBool();
+    ui->checkBox_memory->setChecked(m_datas->activated_memory);
+    m_datas->activated_load = settings->value("activated_load").toBool();
+    ui->checkBox_load->setChecked(m_datas->activated_load);
+    m_datas->activated_process = settings->value("activated_process").toBool();
+    ui->checkBox_process->setChecked(m_datas->activated_process);
+    m_datas->activated_network = settings->value("activated_network").toBool();
+    ui->checkBox_network->setChecked(m_datas->activated_network);
+    m_datas->activated_cpu = settings->value("activated_cpu").toBool();
+    ui->checkBox_cpu->setChecked(m_datas->activated_cpu);
+    m_datas->activated_fs = settings->value("activated_fs").toBool();
+    ui->checkBox_fs->setChecked(m_datas->activated_fs);
 
 
 
-    datas->public_host = settings->value("public_host").toBool();
-    ui->checkBox_public_host->setChecked(datas->public_host);
+    m_datas->public_host = settings->value("public_host").toBool();
+    ui->checkBox_public_host->setChecked(m_datas->public_host);
 
 
 }
@@ -184,25 +211,45 @@ void MainWindow::on_pushButton_infos_clicked()
 
 void MainWindow::on_pushButton_push_clicked()
 {
-    p_datas = new QVariantMap;
+    ui->progressBar->setValue(100);
+    ui->progressBar->setRange(0,0);
+    ui->statusbar->showMessage("");
 
-    if (!datas) datas = new Datas();
 
+    //if (!m_datas) m_datas = new Datas(p_datas, m_getdatas_mutex);
 
     refreshStats();
+    ui->statusbar->showMessage("extract datas");
 
-    datas->Populate(p_datas);
-    push.Payload_http(p_datas);
+    //m_datas->Populate();
+    m_thread_getdatas->start();
 
-    if (push.m_uuid != ui->lineEdit_uuid->text())
-    {
-        ui->lineEdit_uuid->setText(push.m_uuid);
-        settings->setValue("uuid",push.m_uuid);
+
+    while(!m_getdatas_mutex->tryLock()) {
+        qApp->processEvents(QEventLoop::ExcludeUserInputEvents, 5000);
     }
 
-    delete p_datas;
-    delete datas;
-    datas = NULL;
+    ui->progressBar->setValue(100);
+    ui->statusbar->showMessage("sending payload");
+    ui->progressBar->setRange(0,0);
+
+    m_push->Payload_http(p_datas, m_pushdatas_mutex);
+
+    while(!m_pushdatas_mutex->tryLock()) {
+        qApp->processEvents(QEventLoop::ExcludeUserInputEvents, 5000);
+    }
+
+
+    if (m_push->m_uuid != ui->lineEdit_uuid->text())
+    {
+        ui->lineEdit_uuid->setText(m_push->m_uuid);
+        settings->setValue("uuid",m_push->m_uuid);
+    }
+
+    //delete p_datas;
+    //delete m_datas;
+    //m_datas = NULL;
+    m_thread_getdatas->quit();
 }
 
 
@@ -213,41 +260,57 @@ void MainWindow::on_push_uuidChanged(QString uuid)
 }
 
 
+void MainWindow::on_push_pub_uuidChanged(QString pub_uuid)
+{
+    settings->setValue("pub_uuid",pub_uuid);
+}
+
+
 void MainWindow::on_push_httpResponse(int http_error)
 {
     QString tmp;
     //ui->textEdit_output->append("HTTP error : ");
     //ui->textEdit_output->insertPlainText(tmp.setNum(http_error));
 
+    ui->progressBar->setRange(0,100);
+    ui->progressBar->setValue(100);
     ui->statusbar->showMessage("HTTP error : " + tmp.setNum(http_error));
-
 }
+
+
+void MainWindow::on_push_xmppResponse(QString response)
+{
+    ui->progressBar->setRange(0,100);
+    ui->progressBar->setValue(100);
+    ui->statusbar->showMessage("datas " + response);
+}
+
 
 
 void MainWindow::on_lineEdit_server_editingFinished()
 {
     settings->setValue("server",ui->lineEdit_server->text());
-    push.m_server = ui->lineEdit_server->text();
+    m_push->m_server = ui->lineEdit_server->text();
 }
 
 void MainWindow::on_lineEdit_login_editingFinished()
 {
      settings->setValue("login",ui->lineEdit_login->text());
      //push.m_credentials = ui->lineEdit_login->text()+":"+settings->value("password").toString();
-     push.m_credentials = ui->lineEdit_login->text()+":"+ui->lineEdit_password->text();
+     m_push->m_credentials = ui->lineEdit_login->text()+":"+ui->lineEdit_password->text();
 }
 
 void MainWindow::on_lineEdit_password_editingFinished()
 {
      settings->setValue("password",ui->lineEdit_password->text());
      // push.m_credentials = settings->value("login").toString()+":"+ui->lineEdit_password->text();
-     push.m_credentials = ui->lineEdit_login->text()+":"+ui->lineEdit_password->text();
+     m_push->m_credentials = ui->lineEdit_login->text()+":"+ui->lineEdit_password->text();
 }
 
 void MainWindow::on_lineEdit_uuid_editingFinished()
 {
     settings->setValue("uuid",ui->lineEdit_uuid->text());
-    push.m_uuid = ui->lineEdit_uuid->text();
+    m_push->m_uuid = ui->lineEdit_uuid->text();
 }
 
 void MainWindow::on_pushButton_send_clicked()
@@ -335,22 +398,84 @@ void MainWindow::on_checkBox_fs_clicked(bool checked)
 
 void MainWindow::on_pushButton_xmpp_clicked()
 {
-    p_datas = new QVariantMap;
+//    ui->progressBar->setRange(0,100);
 
-    if (!datas) datas = new Datas();
+    ui->progressBar->setValue(100);
+    ui->progressBar->setRange(0,0);
+    ui->statusbar->showMessage("");
+
+    qApp->processEvents(QEventLoop::ExcludeUserInputEvents, 5000);
+
+    //if (!p_datas) p_datas  = new QVariantMap;
+    //if (!m_datas) m_datas = new Datas(p_datas, m_getdatas_mutex);
 
     refreshStats();
+    ui->statusbar->showMessage("extract datas");
 
-    datas->Populate(p_datas);
-    push.Payload_xmpp(p_datas);
+    m_thread_getdatas->start();
 
-    if (push.m_uuid != ui->lineEdit_uuid->text())
-    {
-        ui->lineEdit_uuid->setText(push.m_uuid);
-        settings->setValue("uuid",push.m_uuid);
+    while(!m_getdatas_mutex->tryLock()) {
+        qApp->processEvents(QEventLoop::ExcludeUserInputEvents, 5000);
     }
 
-    delete p_datas;
-    delete datas;
-    datas = NULL;
+
+//    ui->progressBar->setValue(100);
+    ui->statusbar->showMessage("sending payload");
+
+    m_push->Payload_xmpp(p_datas, m_pushdatas_mutex);
+
+    while(!m_pushdatas_mutex->tryLock()) {
+        qApp->processEvents(QEventLoop::ExcludeUserInputEvents, 5000);
+    }
+
+
+    //ui->progressBar->setValue(70);
+
+    if (m_push->m_uuid != ui->lineEdit_uuid->text())
+    {
+        ui->lineEdit_uuid->setText(m_push->m_uuid);
+        settings->setValue("uuid",m_push->m_uuid);
+    }
+
+    //delete p_datas;
+    //delete m_datas;
+    //m_datas = NULL;
+    //p_datas = NULL;
+
+    m_thread_getdatas->quit();
+}
+
+void MainWindow::on_xmpp_connected(bool connected)
+{
+    if (connected)
+    {
+        m_push->m_push_method = "xmpp";
+        ui->pushButton_xmpp->setEnabled(true);
+        ui->statusbar->showMessage("XMPP connected");
+    }
+    else
+    {
+        m_push->m_push_method = "http";
+        ui->pushButton_xmpp->setDisabled(true);
+        ui->statusbar->showMessage("XMPP connection failed");
+    }
+    ui->push_method->setText("push method : " + m_push->m_push_method.toUpper());
+    qDebug() << "PUSH METHOD " << m_push->m_push_method;
+}
+
+
+void MainWindow::push_data()
+{
+
+    if (m_push->m_push_method=="http")
+    {
+        qDebug() << "PUSH METHOD = HTTP";
+        on_pushButton_push_clicked();
+    }
+    else if (m_push->m_push_method=="xmpp")
+    {
+        qDebug() << "PUSH METHOD = XMPP";
+        on_pushButton_xmpp_clicked();
+    }
+
 }

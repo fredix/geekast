@@ -21,10 +21,11 @@
 
 #include "xmpp_client.h"
 
+Xmpp_client *Xmpp_client::_singleton = NULL;
+
 Xmpp_client::Xmpp_client(QObject *parent) : QXmppClient(parent)
 {        
     qDebug() << "Xmpp_client::Xmpp_client !!!";
-
 
     bool check = connect(this, SIGNAL(messageReceived(const QXmppMessage&)),
            SLOT(messageReceived(const QXmppMessage&)));
@@ -35,13 +36,26 @@ Xmpp_client::Xmpp_client(QObject *parent) : QXmppClient(parent)
     check = connect(this, SIGNAL(presenceReceived(const QXmppPresence&)),
                     this, SLOT(presenceReceived(const QXmppPresence&)));
 
-    this->logger()->setLoggingType(QXmppLogger::StdoutLogging);
 
-    this->configuration().setJid("ncs@localhost");
-    this->configuration().setPassword("scn");
-    this->configuration().setResource("geekast");
+
+    check = connect(this, SIGNAL(connected()),
+                    SLOT(connectedToServer()));
+
+
+    check = connect(this, SIGNAL(error(QXmppClient::Error)),
+                    SLOT(connectedError()));
+
+
+
+    //this->logger()->setLoggingType(QXmppLogger::StdoutLogging);
+
+    /*
+    this->configuration().setJid("fredix@gmail.com@localhost");
+    this->configuration().setPassword("f5Csoe6BNO760iLxpHAz");
+    this->configuration().setResource("e218d6f8-1a4e-44fe-8566-f7915aff93bd");
 
     this->connectToServer(this->configuration());
+    */
 
     //this->connectToServer("ncs@localhost/geekast", "scn");
 
@@ -54,8 +68,61 @@ Xmpp_client::Xmpp_client(QObject *parent) : QXmppClient(parent)
 
 
 Xmpp_client::~Xmpp_client()
-{}
+{
+    this->disconnectFromServer();
+}
 
+
+void Xmpp_client::connection()
+{
+    this->configuration().setJid(m_jid);
+    this->configuration().setPassword(m_password);
+    this->configuration().setResource("geekast");
+
+    this->connectToServer(this->configuration());
+}
+
+
+Xmpp_client* Xmpp_client::getInstance() {
+    if (NULL == _singleton)
+        {
+          qDebug() << "creating singleton.";
+          _singleton =  new Xmpp_client;
+        }
+      else
+        {
+          qDebug() << "singleton already created!";
+        }
+      return _singleton;
+}
+
+void Xmpp_client::kill ()
+  {
+    if (NULL != _singleton)
+      {
+        delete _singleton;
+        _singleton = NULL;
+      }
+  }
+
+
+
+void Xmpp_client::connectedToServer()
+{
+    qDebug() << "Xmpp_client::connectedToServer";
+    qDebug() << "Connection successfull !";
+    m_connected=true;
+    emit xmppConnection(true);
+}
+
+
+void Xmpp_client::connectedError()
+{
+    qDebug() << "Xmpp_client::connectedError";
+    qDebug() << "Connection failed !";
+    m_connected=false;
+    emit xmppConnection(false);
+}
 
 
 void Xmpp_client::messageReceived(const QXmppMessage& message)
@@ -68,9 +135,41 @@ void Xmpp_client::messageReceived(const QXmppMessage& message)
     //sendPacket(QXmppMessage("", from, "Your message: " + msg));
 
     //qDebug() << "Xmpp_client::messageReceived : OOOOOOOOOKKKKKKKKK : ";
-    qDebug() << "Xmpp_client::messageReceived : FROM : " << from << " MSG : " << msg;
+    //qDebug() << "Xmpp_client::messageReceived : FROM : " << from << " MSG : " << msg;
 
 
+    QVariant json = QxtJSON::parse(msg);
+
+
+    qDebug() << "json : " << json;
+
+/*
+    if (json.toMap().contains("uuid") && json.toMap().contains("pub_uuid"))
+    {
+        m_uuid = json.toMap()["uuid"].toString();
+        m_pub_uuid = json.toMap()["pub_uuid"].toString();
+
+        m_xmpp_client->kill();
+        m_xmpp_client = Xmpp_client::getInstance();
+        m_xmpp_client->m_jid=m_pub_uuid + "@" + m_server;
+        m_xmpp_client->m_password=m_uuid;
+        m_xmpp_client->connection();
+
+        emit uuidChanged(m_uuid);
+        emit pub_uuidChanged(m_pub_uuid);
+    }
+*/
+
+    if (json.toMap().contains("status"))
+    {
+        emit xmppResponse(json.toMap()["status"].toString());
+    }
+
+
+    m_post_response = "";
+
+
+    /*
     m_xml_response.setContent(msg);
     m_root = m_xml_response.documentElement();
 
@@ -85,6 +184,14 @@ void Xmpp_client::messageReceived(const QXmppMessage& message)
         emit uuidChanged(m_uuid);
         m_post_response = "";
     }
+
+    if (m_node.toElement().tagName() == "status")
+    {
+        qDebug() << "node : " << m_node.toElement().tagName() << " : " << m_post_response;
+        emit xmppResponse(m_post_response);
+    }*/
+
+
 
 }
 

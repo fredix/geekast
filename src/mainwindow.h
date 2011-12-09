@@ -24,7 +24,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-
+#include <QMutex>
 #include <QSystemTrayIcon>
 #include <QMainWindow>
 #include "core.h"
@@ -46,11 +46,15 @@ public:
 
 protected:
     void changeEvent(QEvent *e);
-    Datas *datas;
-    Push push;
+    Datas *m_datas;
+    Push *m_push;
 
 
 private:
+    QThread *m_thread_getdatas;
+    QMutex *m_getdatas_mutex;
+    QMutex *m_pushdatas_mutex;
+
     Ui::MainWindow *ui;
     void createActions();
     void createTrayIcon();
@@ -86,9 +90,13 @@ private slots:
     void on_pushButton_push_clicked();
     void on_pushButton_infos_clicked();
     void on_push_uuidChanged(QString uuid);
+    void on_push_pub_uuidChanged(QString pub_uuid);
     void on_push_httpResponse(int http_error);
+    void on_push_xmppResponse(QString response);
     void on_tray_show_hide(QSystemTrayIcon::ActivationReason reason);
     void on_pushButton_xmpp_clicked();
+    void on_xmpp_connected(bool connected);
+    void push_data();
 };
 
 #endif // MAINWINDOW_H

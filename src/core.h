@@ -34,7 +34,7 @@
 #include <QStack>
 #include <QFile>
 #include <QxtJSON>
-
+#include <QMutex>
 
 extern "C" {
 #include "sigar.h"
@@ -325,13 +325,13 @@ public:
 
 
 
-class Datas
+class Datas: public QObject
 {
+    Q_OBJECT
 
-  public:
-    Datas();
+public:
+    Datas(QVariantMap *a_datas, QMutex *a_mutex);
     ~Datas();
-    void Populate(QVariantMap *a_datas);
     bool activated_hardware;
     bool activated_uptime;
     bool activated_memory;
@@ -342,8 +342,7 @@ class Datas
     bool activated_fs;
     bool public_host;
 
-
-  protected:
+protected:
     QVariantMap *m_root;
     QVariantMap *m_profil;
     QVariantMap *m_public;
@@ -358,18 +357,26 @@ class Datas
     QVariantMap *m_activated_cpu;
     QVariantMap *m_activated_process;
 
-    private:
-        System system;
-        SysInfo *sysinfo;
-        LoadAvg *loadavg;
-        Uptime *uptime;
-        Cpu *cpu;
-        CpuStat *cpustat;
-        Mem *mem;
-        Swap *swap;
-        NetInfo *netinfo;
-        NetStat *netstat;
-        ProcList *proclist;
+
+private:
+    QMutex *m_mutex;
+    QVariantMap *m_datas;
+    System system;
+    SysInfo *sysinfo;
+    LoadAvg *loadavg;
+    Uptime *uptime;
+    Cpu *cpu;
+    CpuStat *cpustat;
+    Mem *mem;
+    Swap *swap;
+    NetInfo *netinfo;
+    NetStat *netstat;
+    ProcList *proclist;
+
+
+public slots:
+    void Populate();
+
 };
 
 

@@ -30,6 +30,7 @@ Push::Push(QObject* parent) : QObject(parent)
     m_network = new QNetworkAccessManager(this);       
     m_post_response = "";
     m_http_error = 0;
+    m_push_method = "http";
 
     m_request.setRawHeader("content-type", "application/xml");
 
@@ -40,15 +41,20 @@ Push::Push(QObject* parent) : QObject(parent)
                             SLOT(slotSetProgress(qint64,qint64)));
 */
 
+
+    m_xmpp_client = Xmpp_client::getInstance();
+
     qRegisterMetaType<QXmppLogger::MessageType>("QXmppLogger::MessageType");
 }
 
 
-void Push::Payload_http(QVariantMap *ldatas) {
+void Push::Payload_http(QVariantMap *ldatas, QMutex *m_pushdatas_mutex) {
 
     qDebug() << "payload and pass : " << m_credentials;
 
     QString json = QxtJSON::stringify(*ldatas);
+
+    //qDebug() << "JSON : " << json;
 
 
     m_request.setRawHeader("Authorization", "Basic " + QByteArray((m_credentials).toAscii()).toBase64());
@@ -62,7 +68,7 @@ void Push::Payload_http(QVariantMap *ldatas) {
     if (m_uuid != "")
     {
         // UPDATE
-        url.setUrl(m_server + "/host/update/" + m_uuid);
+        url.setUrl("http://" + m_server + ":4567" + "/host/update/" + m_uuid);
         //url.setUrl(m_server + "/host/update/");
         qDebug() << "PAYLOAD UPDATE" << m_uuid << " SERVER : " << m_server << "pass : " << m_credentials;
         m_request.setUrl(url);
@@ -74,62 +80,66 @@ void Push::Payload_http(QVariantMap *ldatas) {
         // CREATE
         qDebug() << "PAYLOAD CREATE" << m_uuid << " SERVER : " << m_server;
         //url.setUrl("http://127.0.0.1:3000/hosts.xml");
-        url.setUrl(m_server + "/host/create");
+        url.setUrl("http://" + m_server + ":4567" + "/host/create");
         m_request.setUrl(url);
 
         m_reply = m_network->post(m_request, json.toUtf8().toBase64());
     }
-
-
+    m_pushdatas_mutex->unlock();
 }
 
 
 
 
-void Push::Payload_xmpp(QVariantMap *ldatas) {
+void Push::Payload_xmpp(QVariantMap *ldatas, QMutex *m_pushdatas_mutex) {
 
     qDebug() << "payload and pass : " << m_credentials;
 
-    QVariantMap payload;
-    payload.insert("credentials", m_credentials);
-    payload.insert("datas", *ldatas);
 
-    // qDebug() << QString::fromAscii(QByteArray(m_request.rawHeader( "Authorization" )).fromBase64());
-
-    qDebug() << m_request.rawHeader( "Authorization" ) << m_credentials.toAscii().toBase64();
-
-
-    if (m_uuid != "")
+    if (m_xmpp_client->m_connected)
     {
-        payload.insert("action", "update");
-        payload.insert("uuid", m_uuid);
+        QVariantMap payload;
+        payload.insert("credentials", m_credentials);
+        payload.insert("datas", *ldatas);
 
-        QString json = QxtJSON::stringify(payload);
+        // qDebug() << QString::fromAscii(QByteArray(m_request.rawHeader( "Authorization" )).fromBase64());
+
+        qDebug() << m_request.rawHeader( "Authorization" ) << m_credentials.toAscii().toBase64();
 
 
-        // UPDATE
-        qDebug() << "PAYLOAD UPDATE" << m_uuid << " SERVER : " << m_server << "pass : " << m_credentials;
+        if (m_uuid != "")
+        {
+            payload.insert("action", "update");
+            payload.insert("uuid", m_uuid);
 
-        m_xmpp_client.sendMessage("ncs@localhost/cli", json.toUtf8().toBase64());
-        //m_xmpp_client.sendPacket(QXmppMessage("", "ncs@localhost/cli", *ldatas));
+            QString json = QxtJSON::stringify(payload);
+
+
+            // UPDATE
+            qDebug() << "PAYLOAD UPDATE" << m_uuid << " SERVER : " << m_server << "pass : " << m_credentials;
+
+            m_xmpp_client->sendMessage("ncs@" + m_server + "/cli", json.toUtf8().toBase64());
+            //m_xmpp_client.sendPacket(QXmppMessage("", "ncs@localhost/cli", *ldatas));
+        }
+        else
+        {
+            payload.insert("action", "create");
+            QString json = QxtJSON::stringify(payload);
+
+            // CREATE
+            qDebug() << "PAYLOAD CREATE" << m_uuid << " SERVER : " << m_server;
+            m_xmpp_client->sendMessage("ncs@" + m_server + "/cli", json.toUtf8().toBase64());
+            //m_xmpp_client.sendPacket(QXmppMessage("", "ncs@localhost/cli", *ldatas));
+        }
     }
-    else
-    {                
-        payload.insert("action", "create");
-        QString json = QxtJSON::stringify(payload);
-
-        // CREATE
-        qDebug() << "PAYLOAD CREATE" << m_uuid << " SERVER : " << m_server;
-        m_xmpp_client.sendMessage("ncs@localhost/cli", json.toUtf8().toBase64());
-        //m_xmpp_client.sendPacket(QXmppMessage("", "ncs@localhost/cli", *ldatas));
-    }
-
+    m_pushdatas_mutex->unlock();
 }
 
 
 
 Push::~Push() {            
-    free(m_network);
+    free(m_network);    
+    m_xmpp_client->kill();
 }
 
 
@@ -146,18 +156,23 @@ void Push::slotRequestFinished(QNetworkReply *) {
 
     qDebug() << "HTTP RESPONSE : " << m_post_response;
 
-    m_xml_response.setContent(m_post_response);
-    m_root = m_xml_response.documentElement();
+    QVariant json = QxtJSON::parse(m_post_response);
 
 
-    m_node = m_root.firstChild();
-    m_post_response = m_node.toElement().text();
 
-    if (m_node.toElement().tagName() == "uuid")
+    if (json.toMap().contains("uuid") && json.toMap().contains("pub_uuid"))
     {
-        qDebug() << "node : " << m_node.toElement().tagName() << " : " << m_post_response;
-        m_uuid = m_post_response;
+        m_uuid = json.toMap()["uuid"].toString();
+        m_pub_uuid = json.toMap()["pub_uuid"].toString();
+
+        m_xmpp_client->kill();
+        m_xmpp_client = Xmpp_client::getInstance();
+        m_xmpp_client->m_jid=m_pub_uuid + "@" + m_server;
+        m_xmpp_client->m_password=m_uuid;
+        m_xmpp_client->connection();
+
         emit uuidChanged(m_uuid);
-        m_post_response = "";
+        emit pub_uuidChanged(m_pub_uuid);
     }
+    m_post_response = "";
 }

@@ -706,7 +706,7 @@ System::~System()
 */
 
 
-Datas::Datas()
+Datas::Datas(QVariantMap *a_datas, QMutex *a_mutex) : m_datas(a_datas), m_mutex(a_mutex)
 {
     sysinfo = new SysInfo();
     loadavg = NULL;
@@ -733,6 +733,8 @@ Datas::Datas()
     m_activated_memory = new QVariantMap();
     m_activated_cpu = new QVariantMap();
     m_activated_process = new QVariantMap();
+
+    //Populate();
 
 }
 
@@ -776,8 +778,10 @@ Datas::~Datas()
 
 
 
-void Datas::Populate(QVariantMap *a_datas)
+void Datas::Populate()
 {
+    //QMutexLocker locker(m_mutex);
+
     qDebug() << "Datas::Populate";
 
     m_root->insert("profil", "default");
@@ -812,7 +816,7 @@ void Datas::Populate(QVariantMap *a_datas)
         netstat = new NetStat(netinfo->primary_interface);
 
 
-        data.insert("activated", "true");
+        data.insert("activated", true);
         data.insert("hostname", netinfo->hostname);
         data.insert("domain_name", netinfo->domain_name);
         data.insert("default_gateway", netinfo->default_gateway);
@@ -828,7 +832,7 @@ void Datas::Populate(QVariantMap *a_datas)
     }
     else
     {
-        m_activated_network->insert("activated", "false");
+        m_activated_network->insert("activated", false);
         m_root->insert("network", *m_activated_network);
     }
 
@@ -839,7 +843,7 @@ void Datas::Populate(QVariantMap *a_datas)
 
         uptime = new Uptime();
 
-        data.insert("activated", "true");
+        data.insert("activated", true);
         data.insert("time", uptime->time);
         data.insert("days", uptime->days);
 
@@ -847,7 +851,7 @@ void Datas::Populate(QVariantMap *a_datas)
     }
     else
     {
-        m_activated_uptime->insert("activated", "false");
+        m_activated_uptime->insert("activated", false);
         m_root->insert("uptime", *m_activated_uptime);
     }
 
@@ -859,7 +863,7 @@ void Datas::Populate(QVariantMap *a_datas)
 
        loadavg = new LoadAvg();
 
-       data.insert("activated", "true");
+       data.insert("activated", true);
        data.insert("loadavg0", loadavg->loadavg0);
        data.insert("loadavg1", loadavg->loadavg1);
        data.insert("loadavg2", loadavg->loadavg2);
@@ -868,7 +872,7 @@ void Datas::Populate(QVariantMap *a_datas)
 
    } else
    {
-       m_activated_load->insert("activated", "false");
+       m_activated_load->insert("activated", false);
        m_root->insert("load", *m_activated_load);
    }
 
@@ -879,7 +883,7 @@ void Datas::Populate(QVariantMap *a_datas)
 
         cpu = new Cpu();
 
-        data.insert("activated", "true");
+        data.insert("activated", true);
         data.insert("vendor", cpu->vendor);
         data.insert("model", cpu->model);
         data.insert("mhz", cpu->mhz);
@@ -893,7 +897,7 @@ void Datas::Populate(QVariantMap *a_datas)
     }
     else
     {
-        m_activated_hardware->insert("activated", "false");
+        m_activated_hardware->insert("activated", false);
         m_root->insert("cpu_hardware", *m_activated_hardware);
 
     }
@@ -907,7 +911,7 @@ void Datas::Populate(QVariantMap *a_datas)
         mem = new Mem();
         swap = new Swap();
 
-        data.insert("activated", "true");
+        data.insert("activated", true);
 
 
         data.insert("mem_ram", mem->ram);
@@ -929,7 +933,7 @@ void Datas::Populate(QVariantMap *a_datas)
     }
     else
     {
-        m_activated_memory->insert("activated", "false");
+        m_activated_memory->insert("activated", false);
         m_root->insert("memory", *m_activated_memory);
     }
 
@@ -940,7 +944,7 @@ void Datas::Populate(QVariantMap *a_datas)
 
         cpustat = new CpuStat();
 
-        data.insert("activated", "true");
+        data.insert("activated", true);
         data.insert("user", cpustat->user);
         data.insert("sys", cpustat->sys);
         data.insert("nice", cpustat->nice);
@@ -956,7 +960,7 @@ void Datas::Populate(QVariantMap *a_datas)
     }
     else
     {
-        m_activated_cpu->insert("activated", "false");
+        m_activated_cpu->insert("activated", false);
         m_root->insert("cpu_usage", *m_activated_cpu);
     }
 
@@ -984,7 +988,7 @@ void Datas::Populate(QVariantMap *a_datas)
         QString counter;
         counter.setNum(proclist->stack.count());
 
-        data.insert("activated", "true");
+        data.insert("activated", true);
         data.insert("process_number", counter);
 
 
@@ -1034,7 +1038,7 @@ void Datas::Populate(QVariantMap *a_datas)
     }
     else
     {
-        m_activated_process->insert("activated", "false");
+        m_activated_process->insert("activated", false);
         m_root->insert("process", *m_activated_process);
     }
 
@@ -1047,6 +1051,7 @@ void Datas::Populate(QVariantMap *a_datas)
     out << json;
     file.close();
 
-    *a_datas = *m_root;
+    *m_datas = *m_root;
+    m_mutex->unlock();
 }
 

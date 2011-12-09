@@ -23,10 +23,11 @@
 
 #include <QObject>
 #include <QDebug>
-#include <QDomDocument>
 #include "QXmppMessage.h"
 #include "QXmppLogger.h"
 #include "QXmppClient.h"
+#include <QxtJSON>
+
 
 
 class Xmpp_client : public QXmppClient
@@ -34,23 +35,33 @@ class Xmpp_client : public QXmppClient
     Q_OBJECT
 
 public:
-    Xmpp_client(QObject *parent = 0);
-    ~Xmpp_client();
+    static Xmpp_client *getInstance();
+    static void kill();
+    void connection();
     QString m_uuid;
+    QString m_pub_uuid;
+    bool m_connected;
+    QString m_jid;
+    QString m_password;
 
 private:
+    Xmpp_client(QObject *parent = 0);
+    ~Xmpp_client();
+    static Xmpp_client *_singleton;
+
     QXmppLogger m_logger;
     QXmppPresence subscribe;
 
-    QDomDocument m_xml_response;
-    QDomElement m_root;
-    QDomNode m_node;
     QString m_post_response;
 
 signals:
     void uuidChanged(QString uuid);
+    void xmppResponse(QString response);
+    void xmppConnection(bool m_connected);
 
 public slots:
+    void connectedToServer();
+    void connectedError();
     void messageReceived(const QXmppMessage&);
     void presenceReceived(const QXmppPresence& presence);
 };

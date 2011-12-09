@@ -23,7 +23,7 @@ HEADERS += core_linux.h \
 FORMS += mainwindow.ui
 RESOURCES += ../geekast.qrc
 #LIBS += -Lexternal/hyperic-sigar-1.6.3/sigar-bin/lib/ \
-LIBS += /usr/local/lib/libqxmpp-3.0.a \
+LIBS += -lqxmpp \
         -lsigar \
         -lQxtCore
 

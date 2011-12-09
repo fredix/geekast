@@ -1,6 +1,12 @@
 geekast is a nodecast's client 
 
-INSTALL :
+INSTALL
+
+install libsigar if not packaged in your linux distribution :
+
+cp src/externals/hyperic-sigar-1.6.4/sigar-bin/lib/libsigar-amd64-linux.so /usr/local/lib/libsigar.so
+cp src/externals/hyperic-sigar-1.6.4/sigar-bin/include/* /usr/local/include/
+
 qmake
 make
 

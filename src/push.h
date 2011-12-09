@@ -28,7 +28,6 @@
 #include <QtNetwork>
 #include <QAuthenticator>
 #include <QTest>
-#include <QDomDocument>
 #include <QxtJSON>
 #include "xmpp_client.h"
 
@@ -40,12 +39,17 @@ class Push : public QObject
 public:
     Push(QObject *parent = 0);
     ~Push();
-    void Payload_http(QVariantMap *ldatas);
-    void Payload_xmpp(QVariantMap *ldatas);
+    void Payload_http(QVariantMap *ldatas, QMutex *a_mutex);
+    void Payload_xmpp(QVariantMap *ldatas, QMutex *a_mutex);
     QString m_credentials;
     QString m_server;
     QString m_uuid;
-    Xmpp_client m_xmpp_client;
+    QString m_pub_uuid;
+    QString m_jid;
+    QString m_push_method;
+    Xmpp_client *m_xmpp_client;
+    QNetworkAccessManager *m_network;
+
 
 public slots:
     void slotRequestFinished(QNetworkReply *);
@@ -53,11 +57,11 @@ public slots:
 
 signals:
     void uuidChanged(QString uuid);
+    void pub_uuidChanged(QString pub_uuid);
     void httpResponse(int http_error);
 
 
 private:
-    QNetworkAccessManager *m_network;
     QByteArray *m_content;
     QNetworkReply *m_reply;
     QUrl url;
@@ -66,10 +70,6 @@ private:
     QAuthenticator *m_auth;
     QString m_post_response;
     int m_http_error;
-    QDomDocument m_xml_response;
-    QDomElement m_root;
-    QDomNode m_node;
-
 };
 //! [0]
 
