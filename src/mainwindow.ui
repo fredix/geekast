@@ -36,79 +36,93 @@
          <item row="0" column="1">
           <widget class="QLineEdit" name="lineEdit_server"/>
          </item>
-         <item row="1" column="0">
+         <item row="2" column="0">
           <widget class="QLabel" name="label_login">
            <property name="text">
             <string>email</string>
            </property>
           </widget>
          </item>
-         <item row="1" column="1">
+         <item row="2" column="1">
           <widget class="QLineEdit" name="lineEdit_login"/>
          </item>
-         <item row="2" column="0">
+         <item row="3" column="0">
           <widget class="QLabel" name="label_password">
            <property name="text">
             <string>API key</string>
            </property>
           </widget>
          </item>
-         <item row="2" column="1">
+         <item row="3" column="1">
           <widget class="QLineEdit" name="lineEdit_password">
            <property name="echoMode">
             <enum>QLineEdit::Normal</enum>
            </property>
           </widget>
          </item>
-         <item row="4" column="0">
+         <item row="5" column="0">
           <widget class="QLabel" name="label_uuid">
            <property name="text">
             <string>private host UUID</string>
            </property>
           </widget>
          </item>
-         <item row="4" column="1">
+         <item row="5" column="1">
           <widget class="QLineEdit" name="lineEdit_uuid">
            <property name="readOnly">
             <bool>false</bool>
            </property>
           </widget>
          </item>
-         <item row="5" column="0">
+         <item row="6" column="0">
           <widget class="QLabel" name="label">
            <property name="text">
             <string>Public host</string>
            </property>
           </widget>
          </item>
-         <item row="5" column="1">
+         <item row="6" column="1">
           <widget class="QCheckBox" name="checkBox_public_host">
            <property name="text">
             <string/>
            </property>
           </widget>
          </item>
-         <item row="6" column="0">
+         <item row="7" column="0">
           <widget class="QLabel" name="label_2">
            <property name="text">
             <string>Profil</string>
            </property>
           </widget>
          </item>
-         <item row="6" column="1">
+         <item row="7" column="1">
           <widget class="QComboBox" name="comboBox_profil"/>
          </item>
-         <item row="7" column="0">
+         <item row="8" column="0">
           <widget class="QLabel" name="label_3">
            <property name="text">
             <string>Refresh rate (minutes)</string>
            </property>
           </widget>
          </item>
-         <item row="7" column="1">
+         <item row="8" column="1">
           <widget class="QSpinBox" name="spinBox_refresh">
            <property name="minimum">
             <number>5</number>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="label_4">
+           <property name="text">
+            <string>port</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QSpinBox" name="spinBox_port">
+           <property name="value">
+            <number>80</number>
            </property>
           </widget>
          </item>

@@ -36,6 +36,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     ui->lineEdit_server->setText(settings->value("server").toString());
+    ui->spinBox_port->setValue(settings->value("port").toInt());
+
+
     ui->lineEdit_login->setText(settings->value("login").toString());
     ui->lineEdit_password->setText(settings->value("password").toString());
     ui->lineEdit_uuid->setText(settings->value("uuid").toString());
@@ -46,6 +49,7 @@ MainWindow::MainWindow(QWidget *parent) :
     m_push = new Push();
     m_push->m_credentials  = settings->value("login").toString()+":"+settings->value("password").toString();
     m_push->m_server = settings->value("server").toString();
+    m_push->m_port = settings->value("port").toString();
     m_push->m_uuid = settings->value("uuid").toString();
 
     m_push->m_xmpp_client->m_jid = settings->value("pub_uuid").toString() + "@" + settings->value("server").toString();;
@@ -377,6 +381,7 @@ void MainWindow::on_spinBox_refresh_valueChanged(int rate)
 }
 
 
+
 void MainWindow::on_checkBox_public_host_clicked(bool checked)
 {
      settings->setValue("public_host",checked);
@@ -479,3 +484,10 @@ void MainWindow::push_data()
     }
 
 }
+
+void MainWindow::on_spinBox_port_valueChanged(const QString &port)
+{
+    settings->setValue("port",port);
+    m_push->m_port=port;
+}
+
