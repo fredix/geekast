@@ -65,10 +65,9 @@ private:
 
     QSystemTrayIcon *trayIcon;
     QMenu *trayIconMenu;
-    QSettings *settings;
     bool sendData;
     QTimer *m_timer;
-
+    QSettings *settings;
 
 
 private slots:
@@ -88,7 +87,6 @@ private slots:
     void on_lineEdit_login_editingFinished();
     void on_lineEdit_server_editingFinished();
     void on_pushButton_push_clicked();
-    void on_pushButton_infos_clicked();
     void on_push_uuidChanged(QString uuid);
     void on_push_pub_uuidChanged(QString pub_uuid);
     void on_push_httpResponse(int http_error);
@@ -97,7 +95,7 @@ private slots:
     void on_pushButton_xmpp_clicked();
     void on_xmpp_connected(bool connected);
     void push_data();
-    void on_spinBox_port_valueChanged(const QString &arg1);
+    void on_spinBox_port_valueChanged(int port);
 };
 
 #endif // MAINWINDOW_H

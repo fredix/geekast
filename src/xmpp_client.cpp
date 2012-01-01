@@ -164,6 +164,10 @@ void Xmpp_client::messageReceived(const QXmppMessage& message)
     {
         emit xmppResponse(json.toMap()["status"].toString());
     }
+    else if (json.toMap().contains("error"))
+    {
+        emit xmppResponse("error : " + json.toMap()["error"].toString());
+    }
 
 
     m_post_response = "";

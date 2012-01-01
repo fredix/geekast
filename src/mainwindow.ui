@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>275</width>
-    <height>460</height>
+    <height>486</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -34,7 +34,11 @@
           </widget>
          </item>
          <item row="0" column="1">
-          <widget class="QLineEdit" name="lineEdit_server"/>
+          <widget class="QLineEdit" name="lineEdit_server">
+           <property name="text">
+            <string>api.nodecast.net</string>
+           </property>
+          </widget>
          </item>
          <item row="2" column="0">
           <widget class="QLabel" name="label_login">
@@ -121,6 +125,9 @@
          </item>
          <item row="1" column="1">
           <widget class="QSpinBox" name="spinBox_port">
+           <property name="maximum">
+            <number>9999</number>
+           </property>
            <property name="value">
             <number>80</number>
            </property>
@@ -147,12 +154,18 @@
            <property name="text">
             <string>hardware</string>
            </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
           </widget>
          </item>
          <item row="1" column="0">
           <widget class="QCheckBox" name="checkBox_uptime">
            <property name="text">
             <string>uptime</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
            </property>
           </widget>
          </item>
@@ -161,12 +174,18 @@
            <property name="text">
             <string>memory</string>
            </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
           </widget>
          </item>
          <item row="3" column="0">
           <widget class="QCheckBox" name="checkBox_load">
            <property name="text">
             <string>load</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
            </property>
           </widget>
          </item>
@@ -175,12 +194,18 @@
            <property name="text">
             <string>process</string>
            </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
           </widget>
          </item>
          <item row="1" column="1">
           <widget class="QCheckBox" name="checkBox_network">
            <property name="text">
             <string>network</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
            </property>
           </widget>
          </item>
@@ -189,12 +214,18 @@
            <property name="text">
             <string>cpu</string>
            </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
           </widget>
          </item>
          <item row="3" column="1">
           <widget class="QCheckBox" name="checkBox_fs">
            <property name="text">
             <string>file system</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
            </property>
           </widget>
          </item>

@@ -31,12 +31,16 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     sendData = false;
-    settings = new QSettings("Geekast", "geekast");
+    settings = new QSettings("Nodecast", "geekast");
 
     ui->setupUi(this);
 
-    ui->lineEdit_server->setText(settings->value("server").toString());
-    ui->spinBox_port->setValue(settings->value("port").toInt());
+
+    m_push = new Push();
+
+
+    if (settings->value("server").toString() != "") ui->lineEdit_server->setText(settings->value("server").toString());
+    if (settings->value("port").toString() != "") ui->spinBox_port->setValue(settings->value("port").toInt());
 
 
     ui->lineEdit_login->setText(settings->value("login").toString());
@@ -46,10 +50,10 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->progressBar->setValue(0);
 
 
-    m_push = new Push();
     m_push->m_credentials  = settings->value("login").toString()+":"+settings->value("password").toString();
     m_push->m_server = settings->value("server").toString();
     m_push->m_port = settings->value("port").toString();
+
     m_push->m_uuid = settings->value("uuid").toString();
 
     m_push->m_xmpp_client->m_jid = settings->value("pub_uuid").toString() + "@" + settings->value("server").toString();;
@@ -204,15 +208,6 @@ void MainWindow::on_tray_show_hide( QSystemTrayIcon::ActivationReason reason )
 }
 
 
-void MainWindow::on_pushButton_infos_clicked()
-{
-  //ui->textEdit_output->append(system.infos());
-
-   //ui->listWidget_output->addItems(system.infos());
-   //system.infos();
-
-}
-
 void MainWindow::on_pushButton_push_clicked()
 {
     ui->progressBar->setValue(100);
@@ -273,20 +268,22 @@ void MainWindow::on_push_pub_uuidChanged(QString pub_uuid)
 void MainWindow::on_push_httpResponse(int http_error)
 {
     QString tmp;
+    QTime t;
     //ui->textEdit_output->append("HTTP error : ");
     //ui->textEdit_output->insertPlainText(tmp.setNum(http_error));
 
     ui->progressBar->setRange(0,100);
     ui->progressBar->setValue(100);
-    ui->statusbar->showMessage("HTTP error : " + tmp.setNum(http_error));
+    ui->statusbar->showMessage("HTTP error : " + tmp.setNum(http_error)  + " at " + t.currentTime().toString());
 }
 
 
 void MainWindow::on_push_xmppResponse(QString response)
 {
+    QTime t;
     ui->progressBar->setRange(0,100);
     ui->progressBar->setValue(100);
-    ui->statusbar->showMessage("datas " + response);
+    ui->statusbar->showMessage("datas " + response + " at " + t.currentTime().toString());
 }
 
 
@@ -485,9 +482,9 @@ void MainWindow::push_data()
 
 }
 
-void MainWindow::on_spinBox_port_valueChanged(const QString &port)
-{
-    settings->setValue("port",port);
-    m_push->m_port=port;
-}
 
+void MainWindow::on_spinBox_port_valueChanged(int port)
+{
+    settings->setValue("port", QString::number(port));
+    m_push->m_port = QString::number(port);
+}

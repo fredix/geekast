@@ -28,8 +28,10 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    QApplication::setOrganizationName("nodecast");
-    QApplication::setApplicationName("geekast");
+    QCoreApplication::setOrganizationName("nodecast");
+    QCoreApplication::setOrganizationDomain("nodecast.net");
+    QCoreApplication::setApplicationName("geekast");
+
 
     if (!QSystemTrayIcon::isSystemTrayAvailable()) {
         QMessageBox::critical(0, QObject::tr("Geekast"),

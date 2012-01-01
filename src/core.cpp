@@ -1019,7 +1019,7 @@ void Datas::Populate()
            m_processus.insert("state_priority", procs.state_priority);
            m_processus.insert("state_nice", procs.state_nice);
            m_processus.insert("state_processor", procs.state_processor);
-           m_processus.insert("state_theads", procs.state_threads);
+           m_processus.insert("state_threads", procs.state_threads);
            m_processus.insert("mem_size", procs.mem_size);
            m_processus.insert("mem_resident", procs.mem_resident);
            m_processus.insert("mem_share", procs.mem_share);
