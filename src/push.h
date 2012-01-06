@@ -54,6 +54,8 @@ public:
 
 public slots:
     void slotRequestFinished(QNetworkReply *);
+    void replyError(QNetworkReply::NetworkError errorCode);
+
     //void slotAuthenticationRequired(const QString &, quint16, QAuthenticator *);
 
 signals:

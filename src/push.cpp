@@ -85,6 +85,11 @@ void Push::Payload_http(QVariantMap *ldatas, QMutex *m_pushdatas_mutex) {
 
         m_reply = m_network->post(m_request, json.toUtf8().toBase64());
     }
+
+    this->connect(m_reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(replyError(QNetworkReply::NetworkError)));
+
+
+
     m_pushdatas_mutex->unlock();
 }
 
@@ -175,4 +180,43 @@ void Push::slotRequestFinished(QNetworkReply *) {
         emit pub_uuidChanged(m_pub_uuid);
     }
     m_post_response = "";
+}
+
+
+
+
+void Push::replyError(QNetworkReply::NetworkError errorCode)
+{
+
+    QNetworkReply* reply = qobject_cast<QNetworkReply*>(sender());
+    switch(errorCode)
+    {
+    case QNetworkReply::TimeoutError:
+    {
+        qDebug() << "Push::replyError HTTP ERROR TIMEOUT !";
+        //m_requestList.remove(QString::fromStdString(m_request));
+        reply->deleteLater();
+        //finished();
+    }
+    case QNetworkReply::HostNotFoundError:
+    {
+        qDebug() << "Push::replyError HOST NOT FOUND";
+        //m_requestList.remove(QString::fromStdString(m_request));
+        reply->deleteLater();
+        //finished();
+    }
+    case QNetworkReply::ConnectionRefusedError:
+    {
+        qDebug() << "Push::replyError Connection refused";
+        //m_requestList.remove(QString::fromStdString(m_request));
+        reply->deleteLater();
+        //finished();
+    }
+
+    default:
+    {
+        qDebug() << "Push::replyError HTTP ERROR DEFAULT ! errorcode : " << errorCode;
+        break;
+    }
+    }
 }
