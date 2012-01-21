@@ -43,7 +43,7 @@ public:
     void Payload_xmpp(QVariantMap *ldatas, QMutex *a_mutex);
     QString m_credentials;
     QString m_server;
-    QString m_port;
+    QString m_http_port;
     QString m_uuid;
     QString m_pub_uuid;
     QString m_jid;

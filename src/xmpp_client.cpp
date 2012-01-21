@@ -75,6 +75,7 @@ Xmpp_client::~Xmpp_client()
 
 void Xmpp_client::connection()
 {
+    this->configuration().setPort(m_xmpp_port);
     this->configuration().setJid(m_jid);
     this->configuration().setPassword(m_password);
     this->configuration().setResource("geekast");

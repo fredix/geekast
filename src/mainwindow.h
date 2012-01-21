@@ -95,7 +95,8 @@ private slots:
     void on_pushButton_xmpp_clicked();
     void on_xmpp_connected(bool connected);
     void push_data();
-    void on_spinBox_port_valueChanged(int port);
+    void on_http_spinBox_port_valueChanged(int port);
+    void on_xmpp_spinBox_port_valueChanged(int port);
 };
 
 #endif // MAINWINDOW_H

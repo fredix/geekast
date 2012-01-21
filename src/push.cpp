@@ -68,7 +68,7 @@ void Push::Payload_http(QVariantMap *ldatas, QMutex *m_pushdatas_mutex) {
     if (m_uuid != "")
     {
         // UPDATE
-        url.setUrl("http://" + m_server + ":" + m_port + "/host/update/" + m_uuid);
+        url.setUrl("http://" + m_server + ":" + m_http_port + "/host/update/" + m_uuid);
         //url.setUrl(m_server + "/host/update/");
         qDebug() << "PAYLOAD UPDATE" << m_uuid << " SERVER : " << m_server << "pass : " << m_credentials;
         m_request.setUrl(url);
@@ -80,7 +80,7 @@ void Push::Payload_http(QVariantMap *ldatas, QMutex *m_pushdatas_mutex) {
         // CREATE
         qDebug() << "PAYLOAD CREATE" << m_uuid << " SERVER : " << m_server;
         //url.setUrl("http://127.0.0.1:3000/hosts.xml");
-        url.setUrl("http://" + m_server + ":" + m_port + "/host/create");
+        url.setUrl("http://" + m_server + ":" + m_http_port + "/host/create");
         m_request.setUrl(url);
 
         m_reply = m_network->post(m_request, json.toUtf8().toBase64());

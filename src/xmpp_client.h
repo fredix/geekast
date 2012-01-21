@@ -41,6 +41,7 @@ public:
     QString m_uuid;
     QString m_pub_uuid;
     bool m_connected;
+    int m_xmpp_port;
     QString m_jid;
     QString m_password;
 

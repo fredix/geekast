@@ -40,7 +40,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
     if (settings->value("server").toString() != "") ui->lineEdit_server->setText(settings->value("server").toString());
-    if (settings->value("port").toString() != "") ui->spinBox_port->setValue(settings->value("port").toInt());
+    if (settings->value("http_port").toString() != "") ui->http_spinBox_port->setValue(settings->value("http_port").toInt());
+    if (settings->value("xmpp_port").toString() != "") ui->xmpp_spinBox_port->setValue(settings->value("xmpp_port").toInt());
 
 
     ui->lineEdit_login->setText(settings->value("login").toString());
@@ -52,10 +53,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
     m_push->m_credentials  = settings->value("login").toString()+":"+settings->value("password").toString();
     m_push->m_server = settings->value("server").toString();
-    m_push->m_port = settings->value("port").toString();
+    m_push->m_http_port = settings->value("http_port").toString();
 
     m_push->m_uuid = settings->value("uuid").toString();
 
+    m_push->m_xmpp_client->m_xmpp_port = settings->value("xmpp_port").toInt();
     m_push->m_xmpp_client->m_jid = settings->value("pub_uuid").toString() + "@" + settings->value("server").toString();;
     m_push->m_xmpp_client->m_password = settings->value("uuid").toString();
     m_push->m_xmpp_client->connection();
@@ -483,8 +485,14 @@ void MainWindow::push_data()
 }
 
 
-void MainWindow::on_spinBox_port_valueChanged(int port)
+void MainWindow::on_http_spinBox_port_valueChanged(int port)
 {
-    settings->setValue("port", QString::number(port));
-    m_push->m_port = QString::number(port);
+    settings->setValue("http_port", QString::number(port));
+    m_push->m_http_port = QString::number(port);
+}
+
+void MainWindow::on_xmpp_spinBox_port_valueChanged(int port)
+{
+    settings->setValue("xmpp_port", QString::number(port));
+    //m_push->m_xmpp_port = QString::number(port);
 }
